@@ -9,7 +9,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -45,23 +45,23 @@ $pie->set_colours( array('#99C754','#54C7C5','#999999','#996699','#009900','#77C
 
 $projectid = $_GET['recordID'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_sumtotal = sprintf("SELECT 
 							sum(csa_tb_manhour) as sum_hour 
 							FROM tk_task_byday 								
 							
 							WHERE csa_tb_backup2 = %s", GetSQLValueString($projectid, "text"));
-$Recordset_sumtotal = mysql_query($query_Recordset_sumtotal, $tankdb) or die(mysql_error());
-$row_Recordset_sumtotal = mysql_fetch_assoc($Recordset_sumtotal);
+$Recordset_sumtotal = mysqli_query($tankdb,$query_Recordset_sumtotal) or die(mysqli_error());
+$row_Recordset_sumtotal = mysqli_fetch_assoc($Recordset_sumtotal);
 $t=$row_Recordset_sumtotal['sum_hour']; 
 
 $sql=sprintf("SELECT * , sum(csa_tb_manhour) as summ1 FROM tk_task_byday 								
 							inner join tk_task_tpye on tk_task_byday.csa_tb_backup4=tk_task_tpye.id								
 								WHERE csa_tb_backup2 = %s GROUP BY csa_tb_backup4 ORDER BY summ1 DESC", GetSQLValueString($projectid, "text")); 
 
-$query = mysql_query($sql, $tankdb) or die(mysql_error());
+$query = mysqli_query($tankdb,$sql) or die(mysqli_error());
 
-while($row=mysql_fetch_assoc($query)){ 
+while($row=mysqli_fetch_assoc($query)){
     $total=$row['summ1']; 
     if(!empty($t)){ 
         $v=round($total/$t,2)*100; 

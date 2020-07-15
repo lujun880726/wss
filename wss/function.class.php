@@ -2,16 +2,23 @@
 $version = "1.3.3b";
 $maxRows = 30;
 $tasklevel = 0;
-mysql_select_db($database_tankdb,$tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
+
+function mysqli_result($res, $row, $field=0) {
+    $res->data_seek($row);
+    $datarow = $res->fetch_array();
+    return $datarow[$field];
+}
 
 if (!function_exists("GetSQLValueString")) {
 function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
 {
+    global $tankdb;
   if (PHP_VERSION < 6) {
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -40,8 +47,8 @@ function get_item( $item ) {
 global $tankdb;
 $sql_item = "SELECT tk_item_value FROM tk_item WHERE tk_item_key = '$item'";
 
-$Recordset_item = mysql_query($sql_item, $tankdb) or die(mysql_error());
-$row_Recordset_item = mysql_fetch_assoc($Recordset_item);
+$Recordset_item = mysqli_query($tankdb,$sql_item) or die(mysqli_error());
+$row_Recordset_item = mysqli_fetch_assoc($Recordset_item);
 return $row_Recordset_item['tk_item_value'];
 }
 
@@ -167,10 +174,10 @@ array_pop($last_use_unique);
 $last_use_arr = json_encode($last_use_unique);
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $update_lastuse = sprintf("UPDATE tk_user SET tk_user_lastuse=%s WHERE uid = $myid",
                        GetSQLValueString($last_use_arr, "text"));  
-$rs_update_lastuse = mysql_query($update_lastuse, $tankdb) or die(mysql_error());
+$rs_update_lastuse = mysqli_query($tankdb,$update_lastuse) or die(mysqli_error());
 $_SESSION['MM_last'] = $last_use_arr;
 
 return $last_use_arr;
@@ -202,17 +209,17 @@ $insertSQL = sprintf("INSERT INTO tk_task (test01, test02, csa_remark1, csa_from
 
 
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($insertSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$insertSQL) or die(mysqli_error());
   
-  $newID = mysql_insert_id();
+  $newID = mysqli_insert_id();
     $newName = $nowuser;
 
 $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_type, tk_log_class, tk_log_description) VALUES (%s, %s, %s , 1, '' )",
                        GetSQLValueString($newName, "text"),
                        GetSQLValueString($multilingual_log_addtask, "text"),
                        GetSQLValueString($newID, "text"));  
-  $Result2 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());
+  $Result2 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 
   return $newID;
 }
@@ -223,16 +230,16 @@ global $tankdb;
 global $database_tankdb;
 
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = "SELECT * FROM tk_task 
 inner join tk_task_tpye on tk_task.csa_type=tk_task_tpye.id 
 inner join tk_user on tk_task.csa_to_user=tk_user.uid 
 inner join tk_status on tk_task.csa_remark2=tk_status.id 
 WHERE csa_project = '$projectid' ORDER BY TID";
-$Recordset1 = mysql_query($query_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 
-$FoundTask = mysql_num_rows($Recordset1);
+$FoundTask = mysqli_num_rows($Recordset1);
     
 if (!$FoundTask) {
  return 0;   
@@ -259,7 +266,7 @@ $nodetitle = $row_Recordset1['task_status']." - ".$row_Recordset1['tk_display_na
 
 $result[] = array('id'=>$row_Recordset1['TID'],'pid'=>$pid,'name'=>$nodename,'title'=>$nodetitle,);
 $i++;
-} while ($row_Recordset1 = mysql_fetch_assoc($Recordset1)); 
+} while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1));
 
 $str=json_encode($result);
 
@@ -273,8 +280,8 @@ global $database_tankdb;
 
 $query_touser =  sprintf("SELECT * FROM tk_user WHERE uid = %s",
                        GetSQLValueString($userid, "int"));  
-$touser = mysql_query($query_touser, $tankdb) or die(mysql_error());
-$row_touser = mysql_fetch_assoc($touser);
+$touser = mysqli_query($tankdb,$query_touser) or die(mysqli_error());
+$row_touser = mysqli_fetch_assoc($touser);
 
 $userinfo->name = $row_touser["tk_display_name"];
 $userinfo->email = $row_touser["tk_user_email"];
@@ -363,8 +370,8 @@ $count_message_SQL = sprintf("SELECT
 							FROM tk_message  							
 							WHERE meid > '$user_message_id' AND tk_mess_touser = '$userid'"
 								);
-$count_message_RS = mysql_query($count_message_SQL, $tankdb) or die(mysql_error());
-$row_count_message = mysql_fetch_assoc($count_message_RS);
+$count_message_RS = mysqli_query($tankdb,$count_message_SQL) or die(mysqli_error());
+$row_count_message = mysqli_fetch_assoc($count_message_RS);
 //$_SESSION['MM_msg_con'] = $row_count_message['count_msg'];
 return $row_count_message['count_msg'];
 }
@@ -452,7 +459,7 @@ $insert_msg_SQL = sprintf("INSERT INTO tk_message (tk_mess_touser, tk_mess_fromu
                        GetSQLValueString($to, "int"),
                        GetSQLValueString($from, "int"),
                        GetSQLValueString($text, "text"));  
-$insert_msg_RS = mysql_query($insert_msg_SQL, $tankdb) or die(mysql_error());
+$insert_msg_RS = mysqli_query($tankdb,$insert_msg_SQL) or die(mysqli_error());
 
 	} //to no from
 
@@ -467,15 +474,15 @@ global $database_tankdb;
  $LoginRS__query=sprintf("SELECT uid, tk_user_login, tk_display_name, tk_user_rank FROM tk_user WHERE binary tk_user_login=%s AND (tk_user_pass=%s OR tk_user_pass=%s)",
   GetSQLValueString($useracc, "text"), GetSQLValueString($tk_password, "text"), GetSQLValueString($userpss, "text")); 
    
-  $LoginRS = mysql_query($LoginRS__query, $tankdb) or die(mysql_error());
-  $loginFoundUser = mysql_num_rows($LoginRS);
+  $LoginRS = mysqli_query($tankdb,$LoginRS__query) or die(mysqli_error());
+  $loginFoundUser = mysqli_num_rows($LoginRS);
   
  
   if ($loginFoundUser) {
 
-    $loginStruid  = mysql_result($LoginRS,0,'uid');
-	$loginStrDisplayname  = mysql_result($LoginRS,0,'tk_display_name');
-	$loginStrrank  = mysql_result($LoginRS,0,'tk_user_rank');
+    $loginStruid  = mysqli_result($LoginRS,0,'uid');
+	$loginStrDisplayname  = mysqli_result($LoginRS,0,'tk_display_name');
+	$loginStrrank  = mysqli_result($LoginRS,0,'tk_user_rank');
       if($loginStrrank == 0){
          return 2;  
       }
@@ -487,7 +494,7 @@ global $database_tankdb;
 	 $updateSQL = sprintf("UPDATE tk_user SET tk_user_token=%s WHERE tk_user_login=%s", 
                        GetSQLValueString($token, "text"),                      
                        GetSQLValueString($useracc, "text"));
-  $Result2 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  $Result2 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
 
   $userarr = array(
 	 'token'=>$token, 
@@ -509,7 +516,7 @@ global $tankdb;
 global $database_tankdb;
 $updateSQL = sprintf("UPDATE tk_user SET tk_user_token=0 WHERE tk_user_token=%s", 
                        GetSQLValueString($token, "text"));
-  $Result2 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  $Result2 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
 
  // return  $updateSQL;
 }
@@ -521,13 +528,13 @@ global $database_tankdb;
  $LoginRS__query=sprintf("SELECT uid FROM tk_user WHERE tk_user_token=%s",
   GetSQLValueString($token, "text")); 
    
-  $LoginRS = mysql_query($LoginRS__query, $tankdb) or die(mysql_error());
-  $loginFoundUser = mysql_num_rows($LoginRS);
+  $LoginRS = mysqli_query($tankdb,$LoginRS__query) or die(mysqli_error());
+  $loginFoundUser = mysqli_num_rows($LoginRS);
   
  
   if ($loginFoundUser) {
 
-$loginStrpid  = mysql_result($LoginRS,0,'uid');
+$loginStrpid  = mysqli_result($LoginRS,0,'uid');
 
  return  $loginStrpid;
   } else {
@@ -654,7 +661,7 @@ $colexams = GetSQLValueString("%%" . str_replace("%","%%",$exam) . "%%", "text")
 				$where.= " tk_task.csa_create_user = $colcreateuser AND";
 			}
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT *, 
 							
 							tk_project.project_name as project_name_prt,
@@ -693,10 +700,10 @@ $query_Recordset1 = sprintf("SELECT *,
 //return $query_Recordset1;
 
 $query_limit_Recordset1 = sprintf("%s LIMIT %d, %d", $query_Recordset1, $startRow_Recordset1, $maxRows_Recordset1);
-$Recordset1 = mysql_query($query_limit_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_limit_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 
-$totalRows_Recordset1 = mysql_num_rows($Recordset1);
+$totalRows_Recordset1 = mysqli_num_rows($Recordset1);
 
 $task_arr = array ();
 do { 
@@ -718,7 +725,7 @@ $task_arr["task"][$row_Recordset1['TID']]['task_status'] =  $row_Recordset1['tas
     //$task_arr["task"][$row_Recordset1['TID']]['level'] =  $row_Recordset1['csa_temp'];
     //$task_arr["task"][$row_Recordset1['TID']]['lastupdate'] =  $row_Recordset1['csa_last_update'];
 
-} while ($row_Recordset1 = mysql_fetch_assoc($Recordset1));
+} while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1));
 $task_arr["total"]= $totalRows_Recordset1;
 
 return $task_arr;
@@ -738,8 +745,8 @@ $query_Recordset_sumtotal = sprintf("SELECT
 								GetSQLValueString($uid, "int"),
 								GetSQLValueString("%" . $multilingual_dd_status_exam . "%", "text")
 								);
-$Recordset_sumtotal = mysql_query($query_Recordset_sumtotal, $tankdb) or die(mysql_error());
-$row_Recordset_sumtotal = mysql_fetch_assoc($Recordset_sumtotal);
+$Recordset_sumtotal = mysqli_query($tankdb,$query_Recordset_sumtotal) or die(mysqli_error());
+$row_Recordset_sumtotal = mysqli_fetch_assoc($Recordset_sumtotal);
 return $row_Recordset_sumtotal['count_task'];
 }
 
@@ -777,21 +784,21 @@ inner join tk_user as tk_user3 on tk_task.csa_create_user=tk_user3.uid
 inner join tk_user as tk_user4 on tk_task.csa_last_user=tk_user4.uid 
 inner join tk_project on tk_task.csa_project=tk_project.id 
 WHERE TID = %s", GetSQLValueString($taskid, "int"));
-$Recordset_task = mysql_query($query_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
 
 
 $query_Recordset_sumlog = sprintf("SELECT sum(csa_tb_manhour) as sum_hour FROM tk_task_byday WHERE csa_tb_backup1= %s", GetSQLValueString($taskid, "int"));
-$Recordset_sumlog = mysql_query($query_Recordset_sumlog, $tankdb) or die(mysql_error());
-$row_Recordset_sumlog = mysql_fetch_assoc($Recordset_sumlog);
+$Recordset_sumlog = mysqli_query($tankdb,$query_Recordset_sumlog) or die(mysqli_error());
+$row_Recordset_sumlog = mysqli_fetch_assoc($Recordset_sumlog);
     
     
 $pattaskid = $row_Recordset_task['csa_remark4'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_pattask = "SELECT * FROM tk_task inner join tk_task_tpye on tk_task.csa_type=tk_task_tpye.id WHERE TID = '$pattaskid'";
-$Recordset_pattask = mysql_query($query_Recordset_pattask, $tankdb) or die(mysql_error());
-$row_Recordset_pattask = mysql_fetch_assoc($Recordset_pattask);
+$Recordset_pattask = mysqli_query($tankdb,$query_Recordset_pattask) or die(mysqli_error());
+$row_Recordset_pattask = mysqli_fetch_assoc($Recordset_pattask);
     
 
 $maxRows_Recordset_subtask = $maxRows;
@@ -801,7 +808,7 @@ if (isset($_GET['pageNum_Recordset_subtask'])) {
 }
 $startRow_Recordset_subtask = $pageNum_Recordset_subtask * $maxRows_Recordset_subtask;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_subtask = sprintf("SELECT * 
 							FROM tk_task 
 							inner join tk_task_tpye on tk_task.csa_type=tk_task_tpye.id								
@@ -811,14 +818,14 @@ $query_Recordset_subtask = sprintf("SELECT *
 								GetSQLValueString($taskid, "int")
 								);
 $query_limit_Recordset_subtask = sprintf("%s LIMIT %d, %d", $query_Recordset_subtask, $startRow_Recordset_subtask, $maxRows_Recordset_subtask);
-$Recordset_subtask = mysql_query($query_limit_Recordset_subtask, $tankdb) or die(mysql_error());
-$row_Recordset_subtask = mysql_fetch_assoc($Recordset_subtask);
+$Recordset_subtask = mysqli_query($tankdb,$query_limit_Recordset_subtask) or die(mysqli_error());
+$row_Recordset_subtask = mysqli_fetch_assoc($Recordset_subtask);
 
 if (isset($_GET['totalRows_Recordset_subtask'])) {
   $totalRows_Recordset_subtask = $_GET['totalRows_Recordset_subtask'];
 } else {
-  $all_Recordset_subtask = mysql_query($query_Recordset_subtask);
-  $totalRows_Recordset_subtask = mysql_num_rows($all_Recordset_subtask);
+  $all_Recordset_subtask = mysqli_query($tankdb,$query_Recordset_subtask);
+  $totalRows_Recordset_subtask = mysqli_num_rows($all_Recordset_subtask);
 }
 $totalPages_Recordset_subtask = ceil($totalRows_Recordset_subtask/$maxRows_Recordset_subtask)-1;
 
@@ -842,9 +849,9 @@ $queryString_Recordset_subtask = sprintf("&totalRows_Recordset_subtask=%d%s", $t
 $query_task_day = sprintf("SELECT * FROM tk_task_byday 
 inner join tk_status on tk_task_byday.csa_tb_status=tk_status.id 
 WHERE csa_tb_backup1= %s ORDER BY csa_tb_year DESC LIMIT 0 , $maxRows", GetSQLValueString($taskid, "int"));
-$Recordset_task_day = mysql_query($query_task_day, $tankdb) or die(mysql_error());
-$row_Recordset_task_day = mysql_fetch_assoc($Recordset_task_day);
-$totalRows_Recordset_task_day = mysql_num_rows($Recordset_task_day);
+$Recordset_task_day = mysqli_query($tankdb,$query_task_day) or die(mysqli_error());
+$row_Recordset_task_day = mysqli_fetch_assoc($Recordset_task_day);
+$totalRows_Recordset_task_day = mysqli_num_rows($Recordset_task_day);
 
     
     
@@ -855,7 +862,7 @@ if (isset($_GET['pageNum_Recordset_comment'])) {
 }
 $startRow_Recordset_comment = $pageNum_Recordset_comment * $maxRows_Recordset_comment;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_comment = sprintf("SELECT * FROM tk_comment 
 inner join tk_user on tk_comment.tk_comm_user =tk_user.uid 
 								 WHERE tk_comm_pid = %s AND tk_comm_type = 1 
@@ -864,14 +871,14 @@ inner join tk_user on tk_comment.tk_comm_user =tk_user.uid
 								GetSQLValueString($taskid, "int")
 								);
 $query_limit_Recordset_comment = sprintf("%s LIMIT %d, %d", $query_Recordset_comment, $startRow_Recordset_comment, $maxRows_Recordset_comment);
-$Recordset_comment = mysql_query($query_limit_Recordset_comment, $tankdb) or die(mysql_error());
-$row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
+$Recordset_comment = mysqli_query($tankdb,$query_limit_Recordset_comment) or die(mysqli_error());
+$row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
 
 if (isset($_GET['totalRows_Recordset_comment'])) {
   $totalRows_Recordset_comment = $_GET['totalRows_Recordset_comment'];
 } else {
-  $all_Recordset_comment = mysql_query($query_Recordset_comment);
-  $totalRows_Recordset_comment = mysql_num_rows($all_Recordset_comment);
+  $all_Recordset_comment = mysqli_query($tankdb,$query_Recordset_comment);
+  $totalRows_Recordset_comment = mysqli_num_rows($all_Recordset_comment);
 }
 $totalPages_Recordset_comment = ceil($totalRows_Recordset_comment/$maxRows_Recordset_comment)-1;
 
@@ -940,7 +947,7 @@ $comment_arr[$row_Recordset_comment['coid']]['user'] =  $row_Recordset_comment['
 $comment_arr[$row_Recordset_comment['coid']]['date'] =  $row_Recordset_comment['tk_comm_lastupdate'];
 
 
-} while ($row_Recordset_comment = mysql_fetch_assoc($Recordset_comment));     
+} while ($row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment));
     
     
 $task_day_arr = array ();
@@ -954,7 +961,7 @@ $task_day_arr[$row_Recordset_task_day['tbid']]['text'] =  $row_Recordset_task_da
 $task_day_arr[$row_Recordset_task_day['tbid']]['comment'] =  $row_Recordset_task_day['csa_tb_comment'];
 
 
-} while ($row_Recordset_task_day = mysql_fetch_assoc($Recordset_task_day));     
+} while ($row_Recordset_task_day = mysqli_fetch_assoc($Recordset_task_day));
     
     
 $sub_task_arr = array ();
@@ -974,7 +981,7 @@ $sub_task_arr[$row_Recordset_subtask['TID']]['priority'] =  $row_Recordset_subta
 $sub_task_arr[$row_Recordset_subtask['TID']]['level'] =  $row_Recordset_subtask['csa_temp'];
 $sub_task_arr[$row_Recordset_subtask['TID']]['lastupdate'] =  $row_Recordset_subtask['csa_last_update'];
 
-} while ($row_Recordset_subtask = mysql_fetch_assoc($Recordset_subtask)); 
+} while ($row_Recordset_subtask = mysqli_fetch_assoc($Recordset_subtask));
 
     
 if ($row_Recordset_task['csa_remark6'] == "-1" ){
@@ -995,8 +1002,8 @@ $wbssum = $row_Recordset_task['csa_remark5'].">".$row_Recordset_task['TID'].">".
 $query_Recordset_sumsublog = "SELECT round(sum(csa_tb_manhour),1) as sum_sublog FROM tk_task  
 inner join tk_task_byday on tk_task.TID=tk_task_byday.csa_tb_backup1 
 WHERE csa_remark5 LIKE '$wbssum%'";
-$Recordset_sumsublog = mysql_query($query_Recordset_sumsublog, $tankdb) or die(mysql_error());
-$row_Recordset_sumsublog = mysql_fetch_assoc($Recordset_sumsublog);
+$Recordset_sumsublog = mysqli_query($tankdb,$query_Recordset_sumsublog) or die(mysqli_error());
+$row_Recordset_sumsublog = mysqli_fetch_assoc($Recordset_sumsublog);
     
 $task_view_arr = array ();
     
@@ -1061,9 +1068,9 @@ inner join tk_status on tk_task_byday.csa_tb_status=tk_status.id
 WHERE csa_tb_year= %s AND csa_tb_backup1= %s",    
                        GetSQLValueString($date, "text"),  
                        GetSQLValueString($taskid, "int"));
-$log = mysql_query($query_log, $tankdb) or die(mysql_error());
-$row_log = mysql_fetch_assoc($log);
-$totalRows_log = mysql_num_rows($log);
+$log = mysqli_query($tankdb,$query_log) or die(mysqli_error());
+$row_log = mysqli_fetch_assoc($log);
+$totalRows_log = mysqli_num_rows($log);
 
     
 
@@ -1084,15 +1091,15 @@ inner join tk_user on tk_comment.tk_comm_user =tk_user.uid
 								GetSQLValueString($logid, "text")
 								);
 $query_limit_Recordset_comment = sprintf("%s LIMIT %d, %d", $query_Recordset_comment, $startRow_Recordset_comment, $maxRows_Recordset_comment);
-$Recordset_comment = mysql_query($query_limit_Recordset_comment, $tankdb) or die(mysql_error());
-$row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
+$Recordset_comment = mysqli_query($tankdb,$query_limit_Recordset_comment) or die(mysqli_error());
+$row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
    
     
 if (isset($_GET['totalRows_Recordset_comment'])) {
   $totalRows_Recordset_comment = $_GET['totalRows_Recordset_comment'];
 } else {
-  $all_Recordset_comment = mysql_query($query_Recordset_comment);
-  $totalRows_Recordset_comment = mysql_num_rows($all_Recordset_comment);
+  $all_Recordset_comment = mysqli_query($tankdb,$query_Recordset_comment);
+  $totalRows_Recordset_comment = mysqli_num_rows($all_Recordset_comment);
 }
 $totalPages_Recordset_comment = ceil($totalRows_Recordset_comment/$maxRows_Recordset_comment)-1;
 
@@ -1124,7 +1131,7 @@ $comment_arr[$row_Recordset_comment['coid']]['user'] =  $row_Recordset_comment['
 $comment_arr[$row_Recordset_comment['coid']]['date'] =  $row_Recordset_comment['tk_comm_lastupdate'];
 
 
-} while ($row_Recordset_comment = mysql_fetch_assoc($Recordset_comment));     
+} while ($row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment));
     
 $log_view_arr = array ();
     
@@ -1146,8 +1153,8 @@ global $tankdb;
 global $database_tankdb;
 
 $query_tkstatus1 = sprintf("SELECT * FROM tk_status WHERE task_status_backup2 = %s ORDER BY task_status_backup1 ASC", GetSQLValueString($exam, "int"));
-$tkstatus1 = mysql_query($query_tkstatus1, $tankdb) or die(mysql_error());
-$row_tkstatus1 = mysql_fetch_assoc($tkstatus1);
+$tkstatus1 = mysqli_query($tankdb,$query_tkstatus1) or die(mysqli_error());
+$row_tkstatus1 = mysqli_fetch_assoc($tkstatus1);
  
     //  return $row_tkstatus1['id'];
     
@@ -1156,7 +1163,7 @@ do {
 
 $tkstatus_arr[$row_tkstatus1['id']]['id'] =  $row_tkstatus1['id'];
 $tkstatus_arr[$row_tkstatus1['id']]['task_status'] =  $row_tkstatus1['task_status'];
-} while ($row_tkstatus1 = mysql_fetch_assoc($tkstatus1));     
+} while ($row_tkstatus1 = mysqli_fetch_assoc($tkstatus1));
     
 return $tkstatus_arr;
 }
@@ -1167,15 +1174,15 @@ global $tankdb;
 global $database_tankdb;
 
 $query_tktype ="SELECT * FROM tk_task_tpye ORDER BY task_tpye_backup1 ASC";
-$tktypeRS = mysql_query($query_tktype, $tankdb) or die(mysql_error());
-$row_tktype = mysql_fetch_assoc($tktypeRS);
+$tktypeRS = mysqli_query($tankdb,$query_tktype) or die(mysqli_error());
+$row_tktype = mysqli_fetch_assoc($tktypeRS);
  
 $tktype_arr = array ();
 do { 
 
 $tktype_arr[$row_tktype['id']]['typeid'] =  $row_tktype['id'];
 $tktype_arr[$row_tktype['id']]['task_tpye'] =  $row_tktype['task_tpye'];
-} while ($row_tktype = mysql_fetch_assoc($tktypeRS));     
+} while ($row_tktype = mysqli_fetch_assoc($tktypeRS));
     
 return $tktype_arr;
 }
@@ -1187,15 +1194,15 @@ global $tankdb;
 global $database_tankdb;
   
 $query_user ="SELECT * FROM tk_user WHERE tk_user_rank <> '0' ORDER BY CONVERT(tk_display_name USING gbk )";
-$userRS = mysql_query($query_user, $tankdb) or die(mysql_error());
-$row_user = mysql_fetch_assoc($userRS);
+$userRS = mysqli_query($tankdb,$query_user) or die(mysqli_error());
+$row_user = mysqli_fetch_assoc($userRS);
  
 $user_arr = array ();
 do { 
 
 $user_arr[$row_user['uid']]['uid'] =  $row_user['uid'];
 $user_arr[$row_user['uid']]['name'] =  $row_user['tk_display_name'];
-} while ($row_user = mysql_fetch_assoc($userRS));     
+} while ($row_user = mysqli_fetch_assoc($userRS));
     
 return $user_arr;
 }
@@ -1213,15 +1220,15 @@ $updatetask = sprintf("UPDATE tk_task SET csa_remark2=%s, csa_remark8=%s, csa_la
                        GetSQLValueString($comment, "text"),
                        GetSQLValueString($uid, "text"),                      
                        GetSQLValueString($taskid, "int"));
-  $Result2 = mysql_query($updatetask, $tankdb) or die(mysql_error());
+  $Result2 = mysqli_query($tankdb,$updatetask) or die(mysqli_error());
  
 if ($comment <> null){
 $examtitle = $multilingual_log_exam1.$comment;
 }
 
 $query_tkstatus1 = sprintf("SELECT * FROM tk_status WHERE id = %s ", GetSQLValueString($status, "text"));
-$tkstatus1 = mysql_query($query_tkstatus1, $tankdb) or die(mysql_error());
-$row_tkstatus1 = mysql_fetch_assoc($tkstatus1);
+$tkstatus1 = mysqli_query($tankdb,$query_tkstatus1) or die(mysqli_error());
+$row_tkstatus1 = mysqli_fetch_assoc($tkstatus1);
  
  
   $newID = $taskid;
@@ -1233,14 +1240,14 @@ $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_ty
                        GetSQLValueString($newName, "text"),
                        GetSQLValueString($action, "text"),
                        GetSQLValueString($newID, "text"));  
-$Result3 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());
+$Result3 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 
 
 $query_Recordset_task = sprintf("SELECT csa_to_user, csa_text, csa_remark2, csa_from_user  
 FROM tk_task 
 WHERE TID = %s", GetSQLValueString($taskid, "int"));
-$Recordset_task = mysql_query($query_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
 
 $mailto = $row_Recordset_task['csa_to_user']; 
 $title = $row_Recordset_task['csa_text'];
@@ -1270,11 +1277,11 @@ $insertSQL = sprintf("INSERT INTO tk_comment (tk_comm_title, tk_comm_user, tk_co
                      GetSQLValueString($poster, "text"),
                        GetSQLValueString($pid, "text"),
                        GetSQLValueString($type, "text"));
-$Result1 = mysql_query($insertSQL, $tankdb) or die(mysql_error());
+$Result1 = mysqli_query($tankdb,$insertSQL) or die(mysqli_error());
 
 if ($type == 3) { //如果是log备注
   $updateSQL = sprintf("UPDATE tk_task_byday SET csa_tb_comment=csa_tb_comment+1 WHERE tbid=%s", GetSQLValueString($pid, "int"));
-  $Result1 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  $Result1 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
     
   $lyear = $date;
   $lgyear = str_split($lyear,4);
@@ -1289,7 +1296,7 @@ $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_ty
                        GetSQLValueString($poster, "text"),
                        GetSQLValueString($action, "text"),
                        GetSQLValueString($taskid, "text"));  
-$Result3 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());
+$Result3 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 }
 
 if ($type == "3"){
@@ -1299,8 +1306,8 @@ if ($type == "3"){
 $query_log = sprintf("SELECT csa_to_user, csa_text  
 FROM tk_task 
 WHERE TID= %s ",GetSQLValueString($pid, "text"));
-$log = mysql_query($query_log, $tankdb) or die(mysql_error());
-$row_log = mysql_fetch_assoc($log);
+$log = mysqli_query($tankdb,$query_log) or die(mysqli_error());
+$row_log = mysqli_fetch_assoc($log);
 
 $title = $row_log['csa_text'];  
     
@@ -1342,8 +1349,8 @@ $checklog__query=sprintf("SELECT tbid FROM tk_task_byday WHERE csa_tb_year=%s AN
   GetSQLValueString($day, "text"),
   GetSQLValueString($taskid, "text")); 
    
-  $checklogRS = mysql_query($checklog__query, $tankdb) or die(mysql_error());
-  $checklogFound = mysql_num_rows($checklogRS);
+  $checklogRS = mysqli_query($tankdb,$checklog__query) or die(mysqli_error());
+  $checklogFound = mysqli_num_rows($checklogRS);
   
  
   if ($checklogFound) {
@@ -1360,14 +1367,14 @@ inner join tk_user as tk_user2 on tk_task.csa_to_user=tk_user2.uid
 inner join tk_user as tk_user1 on tk_task.csa_from_user=tk_user1.uid 
 WHERE TID = %s", GetSQLValueString($taskid, "text"));
 
-$log = mysql_query($query_log, $tankdb) or die(mysql_error());
+$log = mysqli_query($tankdb,$query_log) or die(mysqli_error());
 
-$row_log = mysql_fetch_assoc($log);
+$row_log = mysqli_fetch_assoc($log);
  
 
 $query_tkstatus1 = sprintf("SELECT * FROM tk_status WHERE id = %s", GetSQLValueString($status, "text"));
-$tkstatus1 = mysql_query($query_tkstatus1, $tankdb) or die(mysql_error());
-$row_tkstatus1 = mysql_fetch_assoc($tkstatus1);
+$tkstatus1 = mysqli_query($tankdb,$query_tkstatus1) or die(mysqli_error());
+$row_tkstatus1 = mysqli_fetch_assoc($tkstatus1);
     
 $touser = $row_log['csa_to_user']; 
 $project = $row_log['csa_project']; 
@@ -1394,7 +1401,7 @@ $insertSQL = sprintf("INSERT INTO tk_task_byday (csa_tb_text, csa_tb_year, csa_t
                        GetSQLValueString($type, "text"));
 }
 
-$Result1 = mysql_query($insertSQL, $tankdb) or die(mysql_error());
+$Result1 = mysqli_query($tankdb,$insertSQL) or die(mysqli_error());
 
     
 
@@ -1404,7 +1411,7 @@ $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_ty
                        GetSQLValueString($user, "text"),
                        GetSQLValueString($action, "text"),
                        GetSQLValueString($taskid, "text"));  
-$Result3 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());
+$Result3 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 
 
 $log_time = date("Y-m-d H:i:s");    
@@ -1413,8 +1420,8 @@ $log_time = date("Y-m-d H:i:s");
                        GetSQLValueString($log_time, "text"),
                        GetSQLValueString($user, "text"),                      
                        GetSQLValueString($taskid, "int"));
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result2 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result2 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
     
     
 $mailto = $row_log['uid1']; 
@@ -1442,8 +1449,8 @@ tk_project.id as proid
 FROM tk_task 
 inner join tk_project on tk_task.csa_project=tk_project.id 
 WHERE TID = %s", GetSQLValueString($ptaskid, "int"));
-$Recordset_task = mysql_query($query_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
     
 if ($wbsid == "2"){
 $wbs = $ptaskid.">".$wbsid;
@@ -1491,17 +1498,17 @@ $insertSQL = sprintf("INSERT INTO tk_task ($fid_tag $fid_text csa_from_user, csa
 
     //return $insertSQL;
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($insertSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$insertSQL) or die(mysqli_error());
   
-  $newID = mysql_insert_id();
+  $newID = mysqli_insert_id();
     $newName = $create;
 
 $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_type, tk_log_class, tk_log_description) VALUES (%s, %s, %s , 1, '' )",
                        GetSQLValueString($newName, "text"),
                        GetSQLValueString($multilingual_log_addtask, "text"),
                        GetSQLValueString($newID, "text"));  
-$Result2 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());    
+$Result2 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 
 $msg_to = $to;
 $msg_from = $create;
@@ -1562,7 +1569,7 @@ $where1 = "";
 $where2 = "";
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT * FROM tk_project 
 							
 							inner join tk_user on tk_project.project_to_user=tk_user.uid 
@@ -1573,14 +1580,14 @@ $query_Recordset1 = sprintf("SELECT * FROM tk_project
 							GetSQLValueString($order, "defined", $order, "NULL"));
     //return $query_Recordset1;							
 $query_limit_Recordset1 = sprintf("%s LIMIT %d, %d", $query_Recordset1, $startRow_Recordset1, $maxRows_Recordset1);
-$Recordset1 = mysql_query($query_limit_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_limit_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 
 if (isset($_GET['totalRows_Recordset1'])) {
   $totalRows_Recordset1 = $_GET['totalRows_Recordset1'];
 } else {
-  $all_Recordset1 = mysql_query($query_Recordset1);
-  $totalRows_Recordset1 = mysql_num_rows($all_Recordset1);
+  $all_Recordset1 = mysqli_query($tankdb,$query_Recordset1);
+  $totalRows_Recordset1 = mysqli_num_rows($all_Recordset1);
 }
 $totalPages_Recordset1 = ceil($totalRows_Recordset1/$maxRows_Recordset1)-1;
 
@@ -1609,7 +1616,7 @@ $project_arr["project"][$row_Recordset1['id']]['title'] =  $row_Recordset1['proj
 $project_arr["project"][$row_Recordset1['id']]['status'] =  $row_Recordset1['task_status'];
 $project_arr["project"][$row_Recordset1['id']]['user'] =  $row_Recordset1['tk_display_name'];
     }
-} while ($row_Recordset1 = mysql_fetch_assoc($Recordset1));
+} while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1));
     $project_arr["total"]= $totalRows_Recordset1;
 
 return $project_arr;
@@ -1626,12 +1633,12 @@ $query_DetailRS1 = sprintf("SELECT * FROM tk_project
 inner join tk_user on tk_project.project_to_user=tk_user.uid 
 inner join tk_status_project on tk_project.project_status=tk_status_project.psid 
 WHERE tk_project.id = %s", GetSQLValueString($prjid, "int"));
-$DetailRS1 = mysql_query($query_DetailRS1, $tankdb) or die(mysql_error());
-$row_DetailRS1 = mysql_fetch_assoc($DetailRS1);
+$DetailRS1 = mysqli_query($tankdb,$query_DetailRS1) or die(mysqli_error());
+$row_DetailRS1 = mysqli_fetch_assoc($DetailRS1);
 
 $query_Recordset_sumlog =  sprintf("SELECT sum(csa_tb_manhour) as sum_hour FROM tk_task_byday WHERE csa_tb_backup3= %s ", GetSQLValueString($prjid, "int"));
-$Recordset_sumlog = mysql_query($query_Recordset_sumlog, $tankdb) or die(mysql_error());
-$row_Recordset_sumlog = mysql_fetch_assoc($Recordset_sumlog);
+$Recordset_sumlog = mysqli_query($tankdb,$query_Recordset_sumlog) or die(mysqli_error());
+$row_Recordset_sumlog = mysqli_fetch_assoc($Recordset_sumlog);
     
 
 $maxRows_Recordset_task = $maxRows;
@@ -1648,16 +1655,16 @@ $query_Recordset_task = sprintf("SELECT *
 							inner join tk_status on tk_task.csa_remark2=tk_status.id 
 								WHERE csa_project = %s AND csa_remark4 = '-1' ORDER BY csa_last_update DESC", GetSQLValueString($prjid, "int"));
 $query_limit_Recordset_task = sprintf("%s LIMIT %d, %d", $query_Recordset_task, $startRow_Recordset_task, $maxRows_Recordset_task);
-$Recordset_task = mysql_query($query_limit_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_limit_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
 
     //return $query_limit_Recordset_task;
     
 if (isset($_GET['totalRows_Recordset_task'])) {
   $totalRows_Recordset_task = $_GET['totalRows_Recordset_task'];
 } else {
-  $all_Recordset_task = mysql_query($query_Recordset_task);
-  $totalRows_Recordset_task = mysql_num_rows($all_Recordset_task);
+  $all_Recordset_task = mysqli_query($tankdb,$query_Recordset_task);
+  $totalRows_Recordset_task = mysqli_num_rows($all_Recordset_task);
 }
 $totalPages_Recordset_task = ceil($totalRows_Recordset_task/$maxRows_Recordset_task)-1;
 
@@ -1686,7 +1693,7 @@ if (isset($_GET['pageNum_Recordset_comment'])) {
 }
 $startRow_Recordset_comment = $pageNum_Recordset_comment * $maxRows_Recordset_comment;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_comment = sprintf("SELECT * FROM tk_comment 
 inner join tk_user on tk_comment.tk_comm_user =tk_user.uid 
 								 WHERE tk_comm_pid = %s AND tk_comm_type = 2 
@@ -1695,14 +1702,14 @@ inner join tk_user on tk_comment.tk_comm_user =tk_user.uid
 								GetSQLValueString($prjid, "int")
 								);
 $query_limit_Recordset_comment = sprintf("%s LIMIT %d, %d", $query_Recordset_comment, $startRow_Recordset_comment, $maxRows_Recordset_comment);
-$Recordset_comment = mysql_query($query_limit_Recordset_comment, $tankdb) or die(mysql_error());
-$row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
+$Recordset_comment = mysqli_query($tankdb,$query_limit_Recordset_comment) or die(mysqli_error());
+$row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
 
 if (isset($_GET['totalRows_Recordset_comment'])) {
   $totalRows_Recordset_comment = $_GET['totalRows_Recordset_comment'];
 } else {
-  $all_Recordset_comment = mysql_query($query_Recordset_comment);
-  $totalRows_Recordset_comment = mysql_num_rows($all_Recordset_comment);
+  $all_Recordset_comment = mysqli_query($tankdb,$query_Recordset_comment);
+  $totalRows_Recordset_comment = mysqli_num_rows($all_Recordset_comment);
 }
 $totalPages_Recordset_comment = ceil($totalRows_Recordset_comment/$maxRows_Recordset_comment)-1;
 
@@ -1740,7 +1747,7 @@ $sub_task_arr[$row_Recordset_task['TID']]['priority'] =  $row_Recordset_task['cs
 $sub_task_arr[$row_Recordset_task['TID']]['level'] =  $row_Recordset_task['csa_temp'];
 $sub_task_arr[$row_Recordset_task['TID']]['lastupdate'] =  $row_Recordset_task['csa_last_update'];
 
-} while ($row_Recordset_task = mysql_fetch_assoc($Recordset_task)); 
+} while ($row_Recordset_task = mysqli_fetch_assoc($Recordset_task));
 
 
 $comment_arr = array ();
@@ -1753,7 +1760,7 @@ $comment_arr[$row_Recordset_comment['coid']]['user'] =  $row_Recordset_comment['
 $comment_arr[$row_Recordset_comment['coid']]['date'] =  $row_Recordset_comment['tk_comm_lastupdate'];
 
 
-} while ($row_Recordset_comment = mysql_fetch_assoc($Recordset_comment));   
+} while ($row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment));
 
 
     
@@ -1803,8 +1810,8 @@ inner join tk_user as tk_user1 on tk_document.tk_doc_create=tk_user1.uid
 inner join tk_user as tk_user2 on tk_document.tk_doc_edit=tk_user2.uid 
 $inproject 
 WHERE tk_document.docid = %s", GetSQLValueString($pid, "int"));
-$DetailRS1 = mysql_query($query_DetailRS1, $tankdb) or die(mysql_error());
-$row_DetailRS1 = mysql_fetch_assoc($DetailRS1);
+$DetailRS1 = mysqli_query($tankdb,$query_DetailRS1) or die(mysqli_error());
+$row_DetailRS1 = mysqli_fetch_assoc($DetailRS1);
 } //if pid<>-1
     
 $maxRows_Recordset_file = $maxRows;
@@ -1842,7 +1849,7 @@ $where1 = "";
 $where2 = "";
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_file = sprintf("SELECT * FROM tk_document 
 inner join tk_user on tk_document.tk_doc_edit =tk_user.uid 
 $where1 
@@ -1852,14 +1859,14 @@ WHERE $inprolist
 								GetSQLValueString($inprolists, "text")
 								);
 $query_limit_Recordset_file = sprintf("%s LIMIT %d, %d", $query_Recordset_file, $startRow_Recordset_file, $maxRows_Recordset_file);
-$Recordset_file = mysql_query($query_limit_Recordset_file, $tankdb) or die(mysql_error());
-$row_Recordset_file = mysql_fetch_assoc($Recordset_file);
+$Recordset_file = mysqli_query($tankdb,$query_limit_Recordset_file) or die(mysqli_error());
+$row_Recordset_file = mysqli_fetch_assoc($Recordset_file);
 
 if (isset($_GET['totalRows_Recordset_file'])) {
   $totalRows_Recordset_file = $_GET['totalRows_Recordset_file'];
 } else {
-  $all_Recordset_file = mysql_query($query_Recordset_file);
-  $totalRows_Recordset_file = mysql_num_rows($all_Recordset_file);
+  $all_Recordset_file = mysqli_query($tankdb,$query_Recordset_file);
+  $totalRows_Recordset_file = mysqli_num_rows($all_Recordset_file);
 }
 $totalPages_Recordset_file = ceil($totalRows_Recordset_file/$maxRows_Recordset_file)-1;
 
@@ -1892,7 +1899,7 @@ $file_arr["filelist"][$row_Recordset_file['docid']]['folder'] =  $row_Recordset_
 $file_arr["filelist"][$row_Recordset_file['docid']]['att'] =  1;        
     }
     
-} while ($row_Recordset_file = mysql_fetch_assoc($Recordset_file));
+} while ($row_Recordset_file = mysqli_fetch_assoc($Recordset_file));
     $file_arr["total"]= $totalRows_Recordset_file;
     $file_arr["pid"]= $row_DetailRS1["tk_doc_class2"];
     $file_arr["title"]= $row_DetailRS1["tk_doc_title"];
@@ -1920,8 +1927,8 @@ tk_user2.tk_display_name as tk_display_name2 FROM tk_document
 inner join tk_user as tk_user2 on tk_document.tk_doc_edit=tk_user2.uid 
 $inproject 
 WHERE tk_document.docid = %s", GetSQLValueString($fileid, "int"));
-$DetailRS1 = mysql_query($query_DetailRS1, $tankdb) or die(mysql_error());
-$row_DetailRS1 = mysql_fetch_assoc($DetailRS1);
+$DetailRS1 = mysqli_query($tankdb,$query_DetailRS1) or die(mysqli_error());
+$row_DetailRS1 = mysqli_fetch_assoc($DetailRS1);
 
     //return $query_DetailRS1;
 $file_view_arr = array ();    

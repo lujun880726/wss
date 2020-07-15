@@ -21,35 +21,35 @@ $new_msgid = $_SESSION['MM_msg'];
 
 $user_id= $_SESSION['MM_uid'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT * FROM tk_message inner join tk_user on tk_message.tk_mess_fromuser=tk_user.uid WHERE tk_mess_touser = %s ORDER BY meid DESC", GetSQLValueString($_SESSION['MM_uid'], "int"));
 $query_limit_Recordset1 = sprintf("%s LIMIT %d, %d", $query_Recordset1, $pageNum_Recordset1, $maxRows_Recordset1);
-$Recordset1 = mysql_query($query_limit_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_limit_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 
 $query_Recordset2 = sprintf("SELECT meid FROM tk_message WHERE tk_mess_touser = %s ORDER BY tk_mess_time DESC", GetSQLValueString($_SESSION['MM_uid'], "int"));
 $query_limit_Recordset2 = sprintf("%s LIMIT %d, %d", $query_Recordset2, $maxRows_Recordset1, 1);
-$Recordset2 = mysql_query($query_limit_Recordset2, $tankdb) or die(mysql_error());
-$row_Recordset2 = mysql_fetch_assoc($Recordset2);
+$Recordset2 = mysqli_query($tankdb,$query_limit_Recordset2) or die(mysqli_error());
+$row_Recordset2 = mysqli_fetch_assoc($Recordset2);
 
 $deleteSQL = sprintf("DELETE FROM tk_message WHERE tk_mess_touser = %s AND meid < %s", 
                      GetSQLValueString($_SESSION['MM_uid'], "int"), 
                        GetSQLValueString($row_Recordset2['meid'], "int"));
-$deleteResult1 = mysql_query($deleteSQL, $tankdb) or die(mysql_error());
+$deleteResult1 = mysqli_query($tankdb,$deleteSQL) or die(mysqli_error());
 
 if($pageNum_Recordset1==0 && $row_Recordset1['meid']<>null){
 $message_id = $row_Recordset1['meid'];
 
 $_SESSION['MM_msg'] = $message_id;	
 $updateSQL = "UPDATE tk_user SET tk_user_message='$message_id' WHERE uid='$user_id'";
-$Result1 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+$Result1 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
 }
 
 if (isset($_GET['totalRows_Recordset1'])) {
   $totalRows_Recordset1 = $_GET['totalRows_Recordset1'];
 } else {
-  $all_Recordset1 = mysql_query($query_Recordset1);
-  $totalRows_Recordset1 = mysql_num_rows($all_Recordset1);
+  $all_Recordset1 = mysqli_query($tankdb,$query_Recordset1);
+  $totalRows_Recordset1 = mysqli_num_rows($all_Recordset1);
 }
 
 $totalPages_Recordset1 = ceil($totalRows_Recordset1/$maxRows_Recordset1)-1;
@@ -93,7 +93,7 @@ $queryString_Recordset1 = sprintf("&totalRows_Recordset1=%d%s", $totalRows_Recor
             
             <td><?php echo $row_Recordset1['tk_mess_time']; ?>&nbsp; </td>
           </tr>
-          <?php } while ($row_Recordset1 = mysql_fetch_assoc($Recordset1)); ?>
+          <?php } while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1)); ?>
 		  </tbody>
       </table>
       <?php if ( $totalRows_Recordset1 > $maxRows_Recordset1) { ?>
@@ -158,5 +158,5 @@ $queryString_Recordset1 = sprintf("&totalRows_Recordset1=%d%s", $totalRows_Recor
 </body>
 </html>
 <?php
-mysql_free_result($Recordset1);
+mysqli_free_result($Recordset1);
 ?>

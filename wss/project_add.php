@@ -45,9 +45,9 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form1")) {
                        GetSQLValueString($_POST['project_to_user'], "text"),
                        GetSQLValueString($_POST['project_status'], "text"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($insertSQL, $tankdb) or die(mysql_error());
-  $newID = mysql_insert_id();
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$insertSQL) or die(mysqli_error());
+  $newID = mysqli_insert_id();
   $insertGoTo = "project_view.php?recordID=$newID";
   if (isset($_SERVER['QUERY_STRING'])) {
     $insertGoTo .= (strpos($insertGoTo, '?')) ? "&" : "?";
@@ -58,11 +58,11 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form1")) {
 
 $user_arr = get_user_select();
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset3 = "SELECT * FROM tk_status_project ORDER BY task_status_pbackup1 ASC";
-$Recordset3 = mysql_query($query_Recordset3, $tankdb) or die(mysql_error());
-$row_Recordset3 = mysql_fetch_assoc($Recordset3);
-$totalRows_Recordset3 = mysql_num_rows($Recordset3);
+$Recordset3 = mysqli_query($tankdb,$query_Recordset3) or die(mysqli_error());
+$row_Recordset3 = mysqli_fetch_assoc($Recordset3);
+$totalRows_Recordset3 = mysqli_num_rows($Recordset3);
 
 ?>
 <?php require('head.php'); ?>
@@ -222,11 +222,11 @@ do {
 ?>
         <option value="<?php echo $row_Recordset3['psid']?>"><?php echo $row_Recordset3['task_status']?></option>
         <?php
-} while ($row_Recordset3 = mysql_fetch_assoc($Recordset3));
-  $rows = mysql_num_rows($Recordset3);
+} while ($row_Recordset3 = mysqli_fetch_assoc($Recordset3));
+  $rows = mysqli_num_rows($Recordset3);
   if($rows > 0) {
-      mysql_data_seek($Recordset3, 0);
-	  $row_Recordset3 = mysql_fetch_assoc($Recordset3);
+      mysqli_data_seek($Recordset3, 0);
+	  $row_Recordset3 = mysqli_fetch_assoc($Recordset3);
   }
 ?>
 <?php if ($_SESSION['MM_rank'] > "4") { ?>
@@ -279,5 +279,5 @@ do {
 </body>
 </html>
 <?php
-mysql_free_result($Recordset3);
+mysqli_free_result($Recordset3);
 ?>

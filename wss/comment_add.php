@@ -37,12 +37,12 @@ $taskmid = $taskid;
 $taskmid = $tid;
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_log = sprintf("SELECT csa_to_user, csa_text  
 FROM tk_task 
 WHERE TID= %s ",GetSQLValueString($taskmid, "text"));
-$log = mysql_query($query_log, $tankdb) or die(mysql_error());
-$row_log = mysql_fetch_assoc($log);
+$log = mysqli_query($tankdb,$query_log) or die(mysqli_error());
+$row_log = mysqli_fetch_assoc($log);
 
 $title = $row_log['csa_text'];  
 
@@ -65,14 +65,14 @@ if ((isset($_POST["com_insert"])) && ($_POST["com_insert"] == "form1")) {
                        GetSQLValueString($taskid, "text"),
                        GetSQLValueString($ctype, "text"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($insertSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$insertSQL) or die(mysqli_error());
 
 
 if ($ctype == 3) { //如果是log备注
   $updateSQL = sprintf("UPDATE tk_task_byday SET csa_tb_comment=csa_tb_comment+1 WHERE tbid=%s", GetSQLValueString($taskid, "int"));
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
 }
 
 if ($tid <> "-1"){
@@ -90,7 +90,7 @@ $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_ty
                        GetSQLValueString($nowuserid, "text"),
                        GetSQLValueString($action, "text"),
                        GetSQLValueString($taskmid, "text"));  
-$Result3 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());
+$Result3 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 
 }
 

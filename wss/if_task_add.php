@@ -8,14 +8,14 @@ $task_id=$dataarr['taskid'];
 $uid = check_token($token);
 if($uid <> 3){
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_task = sprintf("SELECT *, 
 tk_project.id as proid  
 FROM tk_task 
 inner join tk_project on tk_task.csa_project=tk_project.id 
 WHERE TID = %s", GetSQLValueString($task_id, "int"));
-$Recordset_task = mysql_query($query_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
     
     $get_type = get_task_type();
     $get_status = get_task_status();

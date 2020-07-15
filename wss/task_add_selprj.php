@@ -44,21 +44,21 @@ if (isset($_GET['inputtitle'])) {
   $colinputtitle_Recordset1 = $_GET['inputtitle'];
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT id, project_name, task_status FROM tk_project 
 inner join tk_status_project on tk_project.project_status=tk_status_project.psid 
 							WHERE task_status NOT LIKE %s AND project_name LIKE %s ORDER BY project_lastupdate DESC",  
 GetSQLValueString("%" . $multilingual_dd_status_prjfinish . "%", "text"), 
 GetSQLValueString("%" . $colinputtitle_Recordset1 . "%", "text"));
 $query_limit_Recordset1 = sprintf("%s LIMIT %d, %d", $query_Recordset1, $startRow_Recordset1, $maxRows_Recordset1);
-$Recordset1 = mysql_query($query_limit_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_limit_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 
 if (isset($_GET['totalRows_Recordset1'])) {
   $totalRows_Recordset1 = $_GET['totalRows_Recordset1'];
 } else {
-  $all_Recordset1 = mysql_query($query_Recordset1);
-  $totalRows_Recordset1 = mysql_num_rows($all_Recordset1);
+  $all_Recordset1 = mysqli_query($tankdb,$query_Recordset1);
+  $totalRows_Recordset1 = mysqli_num_rows($all_Recordset1);
 }
 $totalPages_Recordset1 = ceil($totalRows_Recordset1/$maxRows_Recordset1)-1;
 
@@ -107,20 +107,20 @@ $where = "";
 				$where.= " tk_task.csa_remark4 = $ptaskid";
 		} 
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_subtask = sprintf("SELECT * 
 							FROM tk_task 
 							inner join tk_task_tpye on tk_task.csa_type=tk_task_tpye.id								
 							$where ORDER BY csa_last_update DESC");
 $query_limit_Recordset_subtask = sprintf("%s LIMIT %d, %d", $query_Recordset_subtask, $startRow_Recordset_subtask, $maxRows_Recordset_subtask);
-$Recordset_subtask = mysql_query($query_limit_Recordset_subtask, $tankdb) or die(mysql_error());
-$row_Recordset_subtask = mysql_fetch_assoc($Recordset_subtask);
+$Recordset_subtask = mysqli_query($tankdb,$query_limit_Recordset_subtask) or die(mysqli_error());
+$row_Recordset_subtask = mysqli_fetch_assoc($Recordset_subtask);
 
 if (isset($_GET['totalRows_Recordset_subtask'])) {
   $totalRows_Recordset_subtask = $_GET['totalRows_Recordset_subtask'];
 } else {
-  $all_Recordset_subtask = mysql_query($query_Recordset_subtask);
-  $totalRows_Recordset_subtask = mysql_num_rows($all_Recordset_subtask);
+  $all_Recordset_subtask = mysqli_query($tankdb,$query_Recordset_subtask);
+  $totalRows_Recordset_subtask = mysqli_num_rows($all_Recordset_subtask);
 }
 $totalPages_Recordset_subtask = ceil($totalRows_Recordset_subtask/$maxRows_Recordset_subtask)-1;
 
@@ -193,11 +193,11 @@ function over()
     </tr>
     
 	<?php
-} while ($row_Recordset1 = mysql_fetch_assoc($Recordset1));
-  $rows = mysql_num_rows($Recordset1);
+} while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1));
+  $rows = mysqli_num_rows($Recordset1);
   if($rows > 0) {
-      mysql_data_seek($Recordset1, 0);
-	  $row_Recordset1 = mysql_fetch_assoc($Recordset1);
+      mysqli_data_seek($Recordset1, 0);
+	  $row_Recordset1 = mysqli_fetch_assoc($Recordset1);
   }
 ?>
 
@@ -259,11 +259,11 @@ function over()
     </tr>
     
 	<?php
-} while ($row_Recordset_subtask = mysql_fetch_assoc($Recordset_subtask));
-  $rows = mysql_num_rows($Recordset_subtask);
+} while ($row_Recordset_subtask = mysqli_fetch_assoc($Recordset_subtask));
+  $rows = mysqli_num_rows($Recordset_subtask);
   if($rows > 0) {
-      mysql_data_seek($Recordset_subtask, 0);
-	  $row_Recordset_subtask = mysql_fetch_assoc($Recordset_subtask);
+      mysqli_data_seek($Recordset_subtask, 0);
+	  $row_Recordset_subtask = mysqli_fetch_assoc($Recordset_subtask);
   }
 ?>
 <?php }else {  ?>

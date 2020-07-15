@@ -74,15 +74,15 @@ if (isset($_GET['taskID'])) {
   $task_id = $_GET['taskID'];
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_task = sprintf("SELECT *, 
 tk_project.id as proid  
 FROM tk_task 
 inner join tk_project on tk_task.csa_project=tk_project.id 
 WHERE TID = %s", GetSQLValueString($task_id, "int"));
-$Recordset_task = mysql_query($query_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
-$totalRows_Recordset_task = mysql_num_rows($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
+$totalRows_Recordset_task = mysqli_num_rows($Recordset_task);
 
 if ($wbs_id == "2"){
 $wbs = $task_id.">".$wbs_id;
@@ -148,24 +148,24 @@ send_message( $v['uid'], $msg_from, $msg_type, $msg_id, $msg_title, 1 );
 
 $user_arr = get_user_select();
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_type = "SELECT * FROM tk_task_tpye ORDER BY task_tpye_backup1 ASC";
-$Recordset_type = mysql_query($query_Recordset_type, $tankdb) or die(mysql_error());
-$row_Recordset_type = mysql_fetch_assoc($Recordset_type);
-$totalRows_Recordset_type = mysql_num_rows($Recordset_type);
+$Recordset_type = mysqli_query($tankdb,$query_Recordset_type) or die(mysqli_error());
+$row_Recordset_type = mysqli_fetch_assoc($Recordset_type);
+$totalRows_Recordset_type = mysqli_num_rows($Recordset_type);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_project = sprintf("SELECT * FROM tk_project WHERE id = %s",
                        GetSQLValueString($project_id, "int"));  
-$Recordset_project = mysql_query($query_Recordset_project, $tankdb) or die(mysql_error());
-$row_Recordset_project = mysql_fetch_assoc($Recordset_project);
-$totalRows_Recordset_project = mysql_num_rows($Recordset_project);
+$Recordset_project = mysqli_query($tankdb,$query_Recordset_project) or die(mysqli_error());
+$row_Recordset_project = mysqli_fetch_assoc($Recordset_project);
+$totalRows_Recordset_project = mysqli_num_rows($Recordset_project);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_tkstatus = "SELECT * FROM tk_status WHERE task_status_backup2 <>1 ORDER BY task_status_backup1 ASC";
-$tkstatus = mysql_query($query_tkstatus, $tankdb) or die(mysql_error());
-$row_tkstatus = mysql_fetch_assoc($tkstatus);
-$totalRows_tkstatus = mysql_num_rows($tkstatus);
+$tkstatus = mysqli_query($tankdb,$query_tkstatus) or die(mysqli_error());
+$row_tkstatus = mysqli_fetch_assoc($tkstatus);
+$totalRows_tkstatus = mysqli_num_rows($tkstatus);
 
 
 ?>
@@ -340,11 +340,11 @@ do {
 ?>
                     <option value="<?php echo $row_Recordset_type['id']?>" <?php if($copy==1){ if (!(strcmp($row_Recordset_type['id'], @$task_arr['type']))) {echo "selected=\"selected\"";}} ?>><?php echo $row_Recordset_type['task_tpye']?></option>
                     <?php
-} while ($row_Recordset_type = mysql_fetch_assoc($Recordset_type));
-  $rows = mysql_num_rows($Recordset_type);
+} while ($row_Recordset_type = mysqli_fetch_assoc($Recordset_type));
+  $rows = mysqli_num_rows($Recordset_type);
   if($rows > 0) {
-      mysql_data_seek($Recordset_type, 0);
-	  $row_Recordset_type = mysql_fetch_assoc($Recordset_type);
+      mysqli_data_seek($Recordset_type, 0);
+	  $row_Recordset_type = mysqli_fetch_assoc($Recordset_type);
   }
 ?>
                     <?php if ($_SESSION['MM_rank'] > "4") { ?>
@@ -504,11 +504,11 @@ do {
 ?>
                     <option value="<?php echo $row_tkstatus['id']?>" <?php if($copy==1){if (!(strcmp($row_tkstatus['id'], $task_arr['status']))) {echo "selected=\"selected\"";} } ?>><?php echo $row_tkstatus['task_status']?></option>
                     <?php
-} while ($row_tkstatus = mysql_fetch_assoc($tkstatus));
-  $rows = mysql_num_rows($tkstatus);
+} while ($row_tkstatus = mysqli_fetch_assoc($tkstatus));
+  $rows = mysqli_num_rows($tkstatus);
   if($rows > 0) {
-      mysql_data_seek($tkstatus, 0);
-	  $row_tkstatus = mysql_fetch_assoc($tkstatus);
+      mysqli_data_seek($tkstatus, 0);
+	  $row_tkstatus = mysqli_fetch_assoc($tkstatus);
   }
 ?>
                   </select>
@@ -543,6 +543,6 @@ $('button[data-loading-text]').click(function () {
 </body>
 </html>
 <?php
-mysql_free_result($Recordset_project);
-mysql_free_result($Recordset_type);
+mysqli_free_result($Recordset_project);
+mysqli_free_result($Recordset_type);
 ?>

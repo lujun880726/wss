@@ -1,6 +1,7 @@
 <?php
 $phpself =$_SERVER['PHP_SELF'];
-$pagenames = end(explode("/",$phpself));
+$tmp = explode("/",$phpself);
+$pagenames = end($tmp);
 
 $pagetabs = "mtask";
 if (isset($_GET['pagetab'])) {
@@ -255,7 +256,7 @@ $cc_tome = GetSQLValueString("%%" . str_replace("%","%%",$cc_tome) . "%%", "text
 				$where.= " tk_task.test01 LIKE $cc_tome AND";
 			}
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT *, 
 							
 							tk_project.project_name as project_name_prt,
@@ -291,14 +292,14 @@ $query_Recordset1 = sprintf("SELECT *,
 							GetSQLValueString($orderlist, "defined", $orderlist, "NULL")
 							);
 $query_limit_Recordset1 = sprintf("%s LIMIT %d, %d", $query_Recordset1, $startRow_Recordset1, $maxRows_Recordset1);
-$Recordset1 = mysql_query($query_limit_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_limit_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 
 if (isset($_GET['totalRows_Recordset1'])) {
   $totalRows_Recordset1 = $_GET['totalRows_Recordset1'];
 } else {
-  $all_Recordset1 = mysql_query($query_Recordset1);
-  $totalRows_Recordset1 = mysql_num_rows($all_Recordset1);
+  $all_Recordset1 = mysqli_query($tankdb,$query_Recordset1);
+  $totalRows_Recordset1 = mysqli_num_rows($all_Recordset1);
 }
 $totalPages_Recordset1 = ceil($totalRows_Recordset1/$maxRows_Recordset1)-1;
 
@@ -319,7 +320,7 @@ if (!empty($_SERVER['QUERY_STRING'])) {
 $queryString_Recordset1 = sprintf("&totalRows_Recordset1=%d%s", $totalRows_Recordset1, $queryString_Recordset1);
 
 if($YEAR <> "0000" && $MONTH <> "00"){
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Reclog = sprintf("SELECT *							
 							FROM tk_task  
 							inner join tk_task_byday on tk_task.TID=tk_task_byday.csa_tb_backup1
@@ -343,10 +344,10 @@ $query_Reclog = sprintf("SELECT *
 							GetSQLValueString($startday , "text"),
 							GetSQLValueString($endday , "text")
 							);
-$Reclog = mysql_query($query_Reclog, $tankdb) or die(mysql_error());
+$Reclog = mysqli_query($tankdb,$query_Reclog) or die(mysqli_error());
 
 $strslog=null;
-while($row_Reclog=mysql_fetch_array($Reclog)){
+while($row_Reclog=mysqli_fetch_array($Reclog)){
 $rowstatus = str_replace("'",   "\'",   $row_Reclog['task_status_display']);
 
 $strtext =   htmlspecialchars($row_Reclog['csa_tb_text']);
@@ -371,7 +372,7 @@ $strslog.="var "."d".$row_Reclog['TID'].$row_Reclog['csa_tb_year']."="."'<span t
 }
 } else {$strslog=null;}
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Sumlog = sprintf("SELECT *,
 							sum(csa_tb_manhour) as sumhour							
 							FROM tk_task  
@@ -397,14 +398,14 @@ $query_Sumlog = sprintf("SELECT *,
 							GetSQLValueString($startday , "text"),
 							GetSQLValueString($endday , "text")
 							);
-$Sumlog = mysql_query($query_Sumlog, $tankdb) or die(mysql_error());
+$Sumlog = mysqli_query($tankdb,$query_Sumlog) or die(mysqli_error());
 
 $strssumlog=null;
-while($row_Sumlog=mysql_fetch_array($Sumlog)){
+while($row_Sumlog=mysqli_fetch_array($Sumlog)){
 $strssumlog.="var "."sum".$row_Sumlog['TID']."='".$row_Sumlog['sumhour']."'; ";
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Sumtotal = sprintf("SELECT sum(csa_tb_manhour) as sumtotal							
 							FROM tk_task  
 							
@@ -428,11 +429,11 @@ $query_Sumtotal = sprintf("SELECT sum(csa_tb_manhour) as sumtotal
 							GetSQLValueString($startday , "text"),
 							GetSQLValueString($endday , "text")
 							);
-$Sumtotal = mysql_query($query_Sumtotal, $tankdb) or die(mysql_error());
-$row_Sumtotal = mysql_fetch_assoc($Sumtotal);
+$Sumtotal = mysqli_query($tankdb,$query_Sumtotal) or die(mysqli_error());
+$row_Sumtotal = mysqli_fetch_assoc($Sumtotal);
 
 if($YEAR <> "0000" && $MONTH <> "00"){
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Sumbyday = sprintf("SELECT *, sum(csa_tb_manhour) as Sumbyday							
 							FROM tk_task  
 							
@@ -456,9 +457,9 @@ $query_Sumbyday = sprintf("SELECT *, sum(csa_tb_manhour) as Sumbyday
 							GetSQLValueString($startday , "text"),
 							GetSQLValueString($endday , "text")
 							);
-$Sumbyday = mysql_query($query_Sumbyday, $tankdb) or die(mysql_error());
+$Sumbyday = mysqli_query($tankdb,$query_Sumbyday) or die(mysqli_error());
 $strssumbyday=null;
-while($row_Sumbyday=mysql_fetch_array($Sumbyday)){
+while($row_Sumbyday=mysqli_fetch_array($Sumbyday)){
 $strssumbyday.="var "."sumbd".$row_Sumbyday['csa_tb_year']."='".$row_Sumbyday['Sumbyday']."'; ";
 } 
 } else {$strssumbyday=null;}
@@ -493,7 +494,7 @@ $outwhere = "";
 			$outwhere.= " tk_status.task_status NOT LIKE $outstfinish AND";
 			$outwhere.= " tk_task.csa_plan_et <= $outday";
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_timeout = "SELECT *, 
 							
 							tk_project.project_name as project_name_prt,
@@ -513,14 +514,14 @@ $query_timeout = "SELECT *,
 														
 							ORDER BY csa_plan_et DESC";
 $query_limit_timeout = sprintf("%s LIMIT %d, %d", $query_timeout, $startRow_timeout, $maxRows_timeout);
-$timeout = mysql_query($query_limit_timeout, $tankdb) or die(mysql_error());
-$row_timeout = mysql_fetch_assoc($timeout);
+$timeout = mysqli_query($tankdb,$query_limit_timeout) or die(mysqli_error());
+$row_timeout = mysqli_fetch_assoc($timeout);
 
 if (isset($_GET['totalRows_timeout'])) {
   $totalRows_timeout = $_GET['totalRows_timeout'];
 } else {
-  $all_timeout = mysql_query($query_timeout);
-  $totalRows_timeout = mysql_num_rows($all_timeout);
+  $all_timeout = mysqli_query($tankdb,$query_timeout);
+  $totalRows_timeout = mysqli_num_rows($all_timeout);
 }
 $totalPages_timeout = ceil($totalRows_timeout/$maxRows_timeout)-1;
 
@@ -541,29 +542,29 @@ if (!empty($_SERVER['QUERY_STRING'])) {
 $queryString_timeout = sprintf("&totalRows_timeout=%d%s", $totalRows_timeout, $queryString_timeout);
 }
 //搜索条件
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_tkstatus = "SELECT * FROM tk_status ORDER BY task_status_backup1 ASC";
-$tkstatus = mysql_query($query_tkstatus, $tankdb) or die(mysql_error());
-$row_tkstatus = mysql_fetch_assoc($tkstatus);
-$totalRows_tkstatus = mysql_num_rows($tkstatus);
+$tkstatus = mysqli_query($tankdb,$query_tkstatus) or die(mysqli_error());
+$row_tkstatus = mysqli_fetch_assoc($tkstatus);
+$totalRows_tkstatus = mysqli_num_rows($tkstatus);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_type = "SELECT * FROM tk_task_tpye ORDER BY task_tpye_backup1 ASC";
-$Recordset_type = mysql_query($query_Recordset_type, $tankdb) or die(mysql_error());
-$row_Recordset_type = mysql_fetch_assoc($Recordset_type);
-$totalRows_Recordset_type = mysql_num_rows($Recordset_type);
+$Recordset_type = mysqli_query($tankdb,$query_Recordset_type) or die(mysqli_error());
+$row_Recordset_type = mysqli_fetch_assoc($Recordset_type);
+$totalRows_Recordset_type = mysqli_num_rows($Recordset_type);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_project = "SELECT * FROM tk_project inner join tk_status_project on tk_project.project_status=tk_status_project.psid WHERE task_status NOT LIKE '%$multilingual_dd_status_prjfinish%' ORDER BY project_name ASC";
-$Recordset_project = mysql_query($query_Recordset_project, $tankdb) or die(mysql_error());
-$row_Recordset_project = mysql_fetch_assoc($Recordset_project);
-$totalRows_Recordset_project = mysql_num_rows($Recordset_project);
+$Recordset_project = mysqli_query($tankdb,$query_Recordset_project) or die(mysqli_error());
+$row_Recordset_project = mysqli_fetch_assoc($Recordset_project);
+$totalRows_Recordset_project = mysqli_num_rows($Recordset_project);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset2 = "SELECT * FROM tk_user WHERE tk_user_rank NOT LIKE '0' ORDER BY tk_display_name ASC";
-$Recordset2 = mysql_query($query_Recordset2, $tankdb) or die(mysql_error());
-$row_Recordset2 = mysql_fetch_assoc($Recordset2);
-$totalRows_Recordset2 = mysql_num_rows($Recordset2);
+$Recordset2 = mysqli_query($tankdb,$query_Recordset2) or die(mysqli_error());
+$row_Recordset2 = mysqli_fetch_assoc($Recordset2);
+$totalRows_Recordset2 = mysqli_num_rows($Recordset2);
 ?>
 
 
@@ -631,7 +632,7 @@ echo $strssumbyday;?>
 	  ?>
             </td>
         </tr>
-        <?php } while ($row_timeout = mysql_fetch_assoc($timeout)); ?>
+        <?php } while ($row_timeout = mysqli_fetch_assoc($timeout)); ?>
     </table>
    
    
@@ -723,11 +724,11 @@ if (isset($_SESSION['ser_status'])) {
 		}	
 ?>><?php echo $row_tkstatus['task_status']?></option>
         <?php
-} while ($row_tkstatus = mysql_fetch_assoc($tkstatus));
-  $rows = mysql_num_rows($tkstatus);
+} while ($row_tkstatus = mysqli_fetch_assoc($tkstatus));
+  $rows = mysqli_num_rows($tkstatus);
   if($rows > 0) {
-      mysql_data_seek($tkstatus, 0);
-	  $row_tkstatus = mysql_fetch_assoc($tkstatus);
+      mysqli_data_seek($tkstatus, 0);
+	  $row_tkstatus = mysqli_fetch_assoc($tkstatus);
   }
 ?>
       </select>
@@ -751,11 +752,11 @@ do {
 		} ?>
 		><?php echo $row_Recordset_type['task_tpye']?></option>
         <?php
-} while ($row_Recordset_type = mysql_fetch_assoc($Recordset_type));
-  $rows = mysql_num_rows($Recordset_type);
+} while ($row_Recordset_type = mysqli_fetch_assoc($Recordset_type));
+  $rows = mysqli_num_rows($Recordset_type);
   if($rows > 0) {
-      mysql_data_seek($Recordset_type, 0);
-	  $row_Recordset_type = mysql_fetch_assoc($Recordset_type);
+      mysqli_data_seek($Recordset_type, 0);
+	  $row_Recordset_type = mysqli_fetch_assoc($Recordset_type);
   }
 ?>
       </select>
@@ -844,11 +845,11 @@ do {
 		}
  ?>><?php echo $row_Recordset_project['project_name']?></option>
         <?php
-} while ($row_Recordset_project = mysql_fetch_assoc($Recordset_project));
-  $rows = mysql_num_rows($Recordset_project);
+} while ($row_Recordset_project = mysqli_fetch_assoc($Recordset_project));
+  $rows = mysqli_num_rows($Recordset_project);
   if($rows > 0) {
-      mysql_data_seek($Recordset_project, 0);
-	  $row_Recordset_project = mysql_fetch_assoc($Recordset_project);
+      mysqli_data_seek($Recordset_project, 0);
+	  $row_Recordset_project = mysqli_fetch_assoc($Recordset_project);
   }
 ?>
       </select>
@@ -871,11 +872,11 @@ else if(!(strcmp($row_Recordset2['uid'], "{$_SESSION['MM_uid']}"))) {
 				echo "selected=\"selected\"";
 				} ?>><?php echo $row_Recordset2['tk_display_name']?></option>
         <?php
-} while ($row_Recordset2 = mysql_fetch_assoc($Recordset2));
-  $rows = mysql_num_rows($Recordset2);
+} while ($row_Recordset2 = mysqli_fetch_assoc($Recordset2));
+  $rows = mysqli_num_rows($Recordset2);
   if($rows > 0) {
-      mysql_data_seek($Recordset2, 0);
-	  $row_Recordset2 = mysql_fetch_assoc($Recordset2);
+      mysqli_data_seek($Recordset2, 0);
+	  $row_Recordset2 = mysqli_fetch_assoc($Recordset2);
   }
 ?>
       </select>
@@ -895,11 +896,11 @@ do {
 		}
  ?>><?php echo $row_Recordset2['tk_display_name']?></option>
         <?php
-} while ($row_Recordset2 = mysql_fetch_assoc($Recordset2));
-  $rows = mysql_num_rows($Recordset2);
+} while ($row_Recordset2 = mysqli_fetch_assoc($Recordset2));
+  $rows = mysqli_num_rows($Recordset2);
   if($rows > 0) {
-      mysql_data_seek($Recordset2, 0);
-	  $row_Recordset2 = mysql_fetch_assoc($Recordset2);
+      mysqli_data_seek($Recordset2, 0);
+	  $row_Recordset2 = mysqli_fetch_assoc($Recordset2);
   }
 ?>
       </select>
@@ -918,11 +919,11 @@ do {
 		}
  ?>><?php echo $row_Recordset2['tk_display_name']?></option>
       <?php
-} while ($row_Recordset2 = mysql_fetch_assoc($Recordset2));
-  $rows = mysql_num_rows($Recordset2);
+} while ($row_Recordset2 = mysqli_fetch_assoc($Recordset2));
+  $rows = mysqli_num_rows($Recordset2);
   if($rows > 0) {
-      mysql_data_seek($Recordset2, 0);
-	  $row_Recordset2 = mysql_fetch_assoc($Recordset2);
+      mysqli_data_seek($Recordset2, 0);
+	  $row_Recordset2 = mysqli_fetch_assoc($Recordset2);
   }
 ?>
     </select>
@@ -1043,11 +1044,11 @@ do {
 	  <?php echo $row_Recordset1['tk_display_name1']; ?></a></td>
       </tr>
     <?php
-} while ($row_Recordset1 = mysql_fetch_assoc($Recordset1));
-  $rows = mysql_num_rows($Recordset1);
+} while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1));
+  $rows = mysqli_num_rows($Recordset1);
   if($rows > 0) {
-      mysql_data_seek($Recordset1, 0);
-	  $row_Recordset1 = mysql_fetch_assoc($Recordset1);
+      mysqli_data_seek($Recordset1, 0);
+	  $row_Recordset1 = mysqli_fetch_assoc($Recordset1);
   }
 ?>  
     </tbody>
@@ -1782,11 +1783,11 @@ echo $out_row;
        </td> 
        </tr>
      <?php
-} while ($row_Recordset1 = mysql_fetch_assoc($Recordset1));
-  $rows = mysql_num_rows($Recordset1);
+} while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1));
+  $rows = mysqli_num_rows($Recordset1);
   if($rows > 0) {
-      mysql_data_seek($Recordset1, 0);
-	  $row_Recordset1 = mysql_fetch_assoc($Recordset1);
+      mysqli_data_seek($Recordset1, 0);
+	  $row_Recordset1 = mysqli_fetch_assoc($Recordset1);
   }
 ?>  
    </tbody>

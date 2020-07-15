@@ -18,22 +18,22 @@ $taskid = $_GET['taskid'];
 $nowuser = $_SESSION['MM_uid'];
 
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_touser = "SELECT * FROM tk_user WHERE uid = '$to_user'";
-$touser = mysql_query($query_touser, $tankdb) or die(mysql_error());
-$row_touser = mysql_fetch_assoc($touser);
-$totalRows_touser = mysql_num_rows($touser);
+$touser = mysqli_query($tankdb,$query_touser) or die(mysqli_error());
+$row_touser = mysqli_fetch_assoc($touser);
+$totalRows_touser = mysqli_num_rows($touser);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_task = sprintf("SELECT *, 
 tk_user1.tk_user_email as tk_user_email1, 
 tk_user1.tk_display_name as tk_display_name1 
 FROM tk_task 
 inner join tk_user as tk_user1 on tk_task.csa_from_user=tk_user1.uid 
 WHERE TID = %s", GetSQLValueString($taskid, "int"));
-$Recordset_task = mysql_query($query_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
-$totalRows_Recordset_task = mysql_num_rows($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
+$totalRows_Recordset_task = mysqli_num_rows($Recordset_task);
 
 $mailto = $row_touser['tk_user_email']; 
 $mailto2 = $row_Recordset_task['tk_user_email1']; 
@@ -51,8 +51,8 @@ if (isset($_SERVER['QUERY_STRING'])) {
                        GetSQLValueString($to_user, "text"),
                        GetSQLValueString($nowuser, "text"),                      
                        GetSQLValueString($taskid, "int"));
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result2 = mysql_query($updatetask, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result2 = mysqli_query($tankdb,$updatetask) or die(mysqli_error());
   
  $last_use_arr = pushlastuse($to_user_arr["0"], $to_user_arr["1"], $_SESSION['MM_uid']);
  
@@ -65,7 +65,7 @@ $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_ty
                        GetSQLValueString($newName, "text"),
                        GetSQLValueString($action, "text"),
                        GetSQLValueString($newID, "text"));  
-$Result3 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());
+$Result3 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 
  
     $updateGoTo = "default_task_edit.php?editID=".$taskid;
@@ -95,11 +95,11 @@ send_message( $v['uid'], $msg_from, $msg_type, $msg_id, $msg_title, 1 );
   header(sprintf("Location: %s", $updateGoTo));
   }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_task = sprintf("SELECT * FROM tk_task WHERE TID = %s", GetSQLValueString($taskid, "int"));
-$Recordset_task = mysql_query($query_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
-$totalRows_Recordset_task = mysql_num_rows($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
+$totalRows_Recordset_task = mysqli_num_rows($Recordset_task);
 
 $user_arr = get_user_select();
 ?>

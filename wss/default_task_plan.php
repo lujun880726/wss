@@ -59,8 +59,8 @@ $cc_post= "[".implode(",",$_POST['user_cc'])."]";
                        GetSQLValueString($_POST['csa_last_user'], "text"),
                        GetSQLValueString($_POST['TID'], "int"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
 
   $newID = $colname_Recordset_task;
   $newName = $_SESSION['MM_uid'];
@@ -69,7 +69,7 @@ $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_ty
                        GetSQLValueString($newName, "text"),
                        GetSQLValueString($multilingual_log_edittask, "text"),
                        GetSQLValueString($newID, "text"));  
-$Result2 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());
+$Result2 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 $last_use_arr = pushlastuse($to_user_arr["0"], $to_user_arr["1"], $_SESSION['MM_uid']);
 
 $msg_to = $to_user;
@@ -96,52 +96,52 @@ send_message( $v['uid'], $msg_from, $msg_type, $msg_id, $msg_title, 1 );
   header(sprintf("Location: %s", $updateGoTo));
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_task = sprintf("SELECT *, tk_user1.tk_display_name as tk_display_name1 
 FROM tk_task 
 inner join tk_project on tk_task.csa_project=tk_project.id 
 inner join tk_user as tk_user1 on tk_task.csa_to_user=tk_user1.uid 
 WHERE TID = %s", GetSQLValueString($colname_Recordset_task, "int"));
-$Recordset_task = mysql_query($query_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
-$totalRows_Recordset_task = mysql_num_rows($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
+$totalRows_Recordset_task = mysqli_num_rows($Recordset_task);
 
 $ccarr = json_decode($row_Recordset_task['test01'], true);
 
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_ptask = sprintf("SELECT *  
 FROM tk_task 
 WHERE TID = %s", GetSQLValueString($row_Recordset_task['csa_remark4'], "int"));
-$Recordset_ptask = mysql_query($query_Recordset_ptask, $tankdb) or die(mysql_error());
-$row_Recordset_ptask = mysql_fetch_assoc($Recordset_ptask);
-$totalRows_Recordset_ptask = mysql_num_rows($Recordset_ptask);
+$Recordset_ptask = mysqli_query($tankdb,$query_Recordset_ptask) or die(mysqli_error());
+$row_Recordset_ptask = mysqli_fetch_assoc($Recordset_ptask);
+$totalRows_Recordset_ptask = mysqli_num_rows($Recordset_ptask);
 
 $user_arr = get_user_select();
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_type = "SELECT * FROM tk_task_tpye ORDER BY task_tpye_backup1 ASC";
-$Recordset_type = mysql_query($query_Recordset_type, $tankdb) or die(mysql_error());
-$row_Recordset_type = mysql_fetch_assoc($Recordset_type);
-$totalRows_Recordset_type = mysql_num_rows($Recordset_type);
+$Recordset_type = mysqli_query($tankdb,$query_Recordset_type) or die(mysqli_error());
+$row_Recordset_type = mysqli_fetch_assoc($Recordset_type);
+$totalRows_Recordset_type = mysqli_num_rows($Recordset_type);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_tkstatus = "SELECT * FROM tk_status WHERE task_status_backup2 <> 1 ORDER BY task_status_backup1 ASC";
-$tkstatus = mysql_query($query_tkstatus, $tankdb) or die(mysql_error());
-$row_tkstatus = mysql_fetch_assoc($tkstatus);
-$totalRows_tkstatus = mysql_num_rows($tkstatus);
+$tkstatus = mysqli_query($tankdb,$query_tkstatus) or die(mysqli_error());
+$row_tkstatus = mysqli_fetch_assoc($tkstatus);
+$totalRows_tkstatus = mysqli_num_rows($tkstatus);
 
 $prjid=$row_Recordset_task['csa_project'];
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_project = "SELECT * FROM tk_project WHERE id = $prjid";
-$Recordset_project = mysql_query($query_Recordset_project, $tankdb) or die(mysql_error());
-$row_Recordset_project = mysql_fetch_assoc($Recordset_project);
-$totalRows_Recordset_project = mysql_num_rows($Recordset_project);
+$Recordset_project = mysqli_query($tankdb,$query_Recordset_project) or die(mysqli_error());
+$row_Recordset_project = mysqli_fetch_assoc($Recordset_project);
+$totalRows_Recordset_project = mysqli_num_rows($Recordset_project);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_countlog = sprintf("SELECT COUNT(*) as count_log FROM tk_task_byday WHERE csa_tb_backup1=%s", GetSQLValueString($colname_Recordset_task, "int"));
-$Recordset_countlog = mysql_query($query_Recordset_countlog, $tankdb) or die(mysql_error());
-$row_Recordset_countlog = mysql_fetch_assoc($Recordset_countlog);
+$Recordset_countlog = mysqli_query($tankdb,$query_Recordset_countlog) or die(mysqli_error());
+$row_Recordset_countlog = mysqli_fetch_assoc($Recordset_countlog);
 
 $restrictGoTo = "user_error3.php";
 if (($_SESSION['MM_rank'] < "5" && $row_Recordset_task['csa_create_user'] <> $_SESSION['MM_uid']) || $_SESSION['MM_rank'] < "2") {   
@@ -325,11 +325,11 @@ do {
 ?>
           <option value="<?php echo $row_Recordset_type['id']?>" <?php if (!(strcmp($row_Recordset_type['id'], $row_Recordset_task['csa_type']))) {echo "selected=\"selected\"";} ?>><?php echo $row_Recordset_type['task_tpye']?></option>
           <?php
-} while ($row_Recordset_type = mysql_fetch_assoc($Recordset_type));
-  $rows = mysql_num_rows($Recordset_type);
+} while ($row_Recordset_type = mysqli_fetch_assoc($Recordset_type));
+  $rows = mysqli_num_rows($Recordset_type);
   if($rows > 0) {
-      mysql_data_seek($Recordset_type, 0);
-	  $row_Recordset_type = mysql_fetch_assoc($Recordset_type);
+      mysqli_data_seek($Recordset_type, 0);
+	  $row_Recordset_type = mysqli_fetch_assoc($Recordset_type);
   }
 ?>
         </select>
@@ -346,11 +346,11 @@ do {
 ?>
           <option value="<?php echo $row_Recordset_type['id']?>"<?php if (!(strcmp($row_Recordset_type['id'], $row_Recordset_task['csa_type']))) {echo "selected=\"selected\"";} ?>><?php echo $row_Recordset_type['task_tpye']?></option>
           <?php
-} while ($row_Recordset_type = mysql_fetch_assoc($Recordset_type));
-  $rows = mysql_num_rows($Recordset_type);
+} while ($row_Recordset_type = mysqli_fetch_assoc($Recordset_type));
+  $rows = mysqli_num_rows($Recordset_type);
   if($rows > 0) {
-      mysql_data_seek($Recordset_type, 0);
-	  $row_Recordset_type = mysql_fetch_assoc($Recordset_type);
+      mysqli_data_seek($Recordset_type, 0);
+	  $row_Recordset_type = mysqli_fetch_assoc($Recordset_type);
   }
 ?>
           <?php if ($_SESSION['MM_rank'] > "4") { ?>
@@ -536,7 +536,7 @@ do {
 				<select name="csa_remark2" id="csa_remark2" class="form-control">
           <?php do {  ?>
           <option value="<?php echo $row_tkstatus['id'] ?>" <?php if (!(strcmp($row_tkstatus['id'], $row_Recordset_task['csa_remark2']))) {echo "selected=\"selected\"";} ?>><?php echo $row_tkstatus['task_status']?></option>
-          <?php } while ($row_tkstatus = mysql_fetch_assoc($tkstatus));  $rows = mysql_num_rows($tkstatus);  if($rows > 0) {      mysql_data_seek($tkstatus, 0);	  $row_tkstatus = mysql_fetch_assoc($tkstatus);  } ?>
+          <?php } while ($row_tkstatus = mysqli_fetch_assoc($tkstatus));  $rows = mysqli_num_rows($tkstatus);  if($rows > 0) {      mysqli_data_seek($tkstatus, 0);	  $row_tkstatus = mysqli_fetch_assoc($tkstatus);  } ?>
         </select>
 				
                
@@ -564,7 +564,7 @@ do {
 </body>
 </html>
 <?php
-mysql_free_result($Recordset_task);
-mysql_free_result($Recordset_type);
-mysql_free_result($Recordset_project);
+mysqli_free_result($Recordset_task);
+mysqli_free_result($Recordset_type);
+mysqli_free_result($Recordset_project);
 ?>

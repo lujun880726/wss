@@ -8,7 +8,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
  
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -38,13 +38,13 @@ $projectid = $_GET['projectid'];
 $tasktype = $_GET['tasktype'];
 $nowuser = $_SESSION['MM_uid'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $sql=sprintf("SELECT * FROM tk_task_byday 
 inner join tk_status on tk_task_byday.csa_tb_status=tk_status.id 
 WHERE csa_tb_backup1= %s", GetSQLValueString($taskid, "int"));
-$rec=mysql_query($sql);
+$rec=mysqli_query($tankdb,$sql);
 $strs=null;
-while($row=mysql_fetch_array($rec)){
+while($row=mysqli_fetch_array($rec)){
 $rowstatus = str_replace("'",   "\'",   $row['task_status_display']);
 
 $strtext =   $row['csa_tb_text'];

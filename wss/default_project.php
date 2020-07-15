@@ -9,7 +9,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -47,20 +47,20 @@ if (isset($_GET[$multilingual_dd_project_inside])) {
   $colname_Recordset1 = $_GET[$multilingual_dd_project_inside];
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT * FROM tk_project 
 							
 							inner join tk_user on tk_project.project_to_user=tk_user.tk_user_login
 							WHERE project_type = %s ORDER BY project_lastupdate DESC", GetSQLValueString($colname_Recordset1, "text"));
 $query_limit_Recordset1 = sprintf("%s LIMIT %d, %d", $query_Recordset1, $startRow_Recordset1, $maxRows_Recordset1);
-$Recordset1 = mysql_query($query_limit_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_limit_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 
 if (isset($_GET['totalRows_Recordset1'])) {
   $totalRows_Recordset1 = $_GET['totalRows_Recordset1'];
 } else {
-  $all_Recordset1 = mysql_query($query_Recordset1);
-  $totalRows_Recordset1 = mysql_num_rows($all_Recordset1);
+  $all_Recordset1 = mysqli_query($tankdb,$query_Recordset1);
+  $totalRows_Recordset1 = mysqli_num_rows($all_Recordset1);
 }
 $totalPages_Recordset1 = ceil($totalRows_Recordset1/$maxRows_Recordset1)-1;
 
@@ -134,7 +134,7 @@ $queryString_Recordset1 = sprintf("&totalRows_Recordset1=%d%s", $totalRows_Recor
       <td><?php echo $row_Recordset1['project_status']; ?></td>
       <td><?php echo $row_Recordset1['project_lastupdate']; ?>&nbsp; </td>
       </tr>
-    <?php } while ($row_Recordset1 = mysql_fetch_assoc($Recordset1)); ?>
+    <?php } while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1)); ?>
 </table>
 </div>
 <table class="rowcon" border="0" align="center">
@@ -183,5 +183,5 @@ $queryString_Recordset1 = sprintf("&totalRows_Recordset1=%d%s", $totalRows_Recor
 </body>
 </html>
 <?php
-mysql_free_result($Recordset1);
+mysqli_free_result($Recordset1);
 ?>

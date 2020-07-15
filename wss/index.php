@@ -15,7 +15,7 @@ $currentPage = $_SERVER["PHP_SELF"];
 
 $taskpage=2;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_sumtotal = sprintf("SELECT 
 							COUNT(*) as count_task   
 							FROM tk_task 	
@@ -24,8 +24,8 @@ $query_Recordset_sumtotal = sprintf("SELECT
 								GetSQLValueString($_SESSION['MM_uid'], "int"),
 								GetSQLValueString("%" . $multilingual_dd_status_exam . "%", "text")
 								);
-$Recordset_sumtotal = mysql_query($query_Recordset_sumtotal, $tankdb) or die(mysql_error());
-$row_Recordset_sumtotal = mysql_fetch_assoc($Recordset_sumtotal);
+$Recordset_sumtotal = mysqli_query($tankdb,$query_Recordset_sumtotal) or die(mysqli_error());
+$row_Recordset_sumtotal = mysqli_fetch_assoc($Recordset_sumtotal);
 $exam_totaltask=$row_Recordset_sumtotal['count_task'];
 
 ?>

@@ -9,15 +9,15 @@ $tab=$dataarr['tab'];
 $uid = check_token($token);
 if($uid <> 3){
     
-    mysql_select_db($database_tankdb, $tankdb);
+    mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_sumtotal = sprintf("SELECT 
 							COUNT(*) as count_prj   
 							FROM tk_project 	
 							WHERE project_to_user = %s", 
 								GetSQLValueString($uid, "int")
 								);
-$Recordset_sumtotal = mysql_query($query_Recordset_sumtotal, $tankdb) or die(mysql_error());
-$row_Recordset_sumtotal = mysql_fetch_assoc($Recordset_sumtotal);
+$Recordset_sumtotal = mysqli_query($tankdb,$query_Recordset_sumtotal) or die(mysqli_error());
+$row_Recordset_sumtotal = mysqli_fetch_assoc($Recordset_sumtotal);
 $my_totalprj=$row_Recordset_sumtotal['count_prj'];
 
     $get_function = project_list( $uid, "project_lastupdate", "DESC", "0", $tab );

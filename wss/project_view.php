@@ -29,20 +29,20 @@ $colname_DetailRS1 = "-1";
 if (isset($_GET['recordID'])) {
   $colname_DetailRS1 = $_GET['recordID'];
 }
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_DetailRS1 = sprintf("SELECT * FROM tk_project 
 inner join tk_user on tk_project.project_to_user=tk_user.uid 
 inner join tk_status_project on tk_project.project_status=tk_status_project.psid 
 WHERE tk_project.id = %s", GetSQLValueString($colname_DetailRS1, "int"));
 $query_limit_DetailRS1 = sprintf("%s LIMIT %d, %d", $query_DetailRS1, $startRow_DetailRS1, $maxRows_DetailRS1);
-$DetailRS1 = mysql_query($query_limit_DetailRS1, $tankdb) or die(mysql_error());
-$row_DetailRS1 = mysql_fetch_assoc($DetailRS1);
+$DetailRS1 = mysqli_query($tankdb,$query_limit_DetailRS1) or die(mysqli_error());
+$row_DetailRS1 = mysqli_fetch_assoc($DetailRS1);
 
 if (isset($_GET['totalRows_DetailRS1'])) {
   $totalRows_DetailRS1 = $_GET['totalRows_DetailRS1'];
 } else {
-  $all_DetailRS1 = mysql_query($query_DetailRS1);
-  $totalRows_DetailRS1 = mysql_num_rows($all_DetailRS1);
+  $all_DetailRS1 = mysqli_query($tankdb,$query_DetailRS1);
+  $totalRows_DetailRS1 = mysqli_num_rows($all_DetailRS1);
 }
 $totalPages_DetailRS1 = ceil($totalRows_DetailRS1/$maxRows_DetailRS1)-1;
 
@@ -55,7 +55,7 @@ $startRow_Recordset_task = $pageNum_Recordset_task * $maxRows_Recordset_task;
 
 $colname_Recordset_task = $row_DetailRS1['id'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_task = sprintf("SELECT *
 							FROM tk_task 								
 							inner join tk_task_tpye on tk_task.csa_type=tk_task_tpye.id								
@@ -63,14 +63,14 @@ $query_Recordset_task = sprintf("SELECT *
 							inner join tk_status on tk_task.csa_remark2=tk_status.id 
 								WHERE csa_project = %s AND csa_remark4 = '-1' ORDER BY csa_last_update DESC", GetSQLValueString($colname_Recordset_task, "text"));
 $query_limit_Recordset_task = sprintf("%s LIMIT %d, %d", $query_Recordset_task, $startRow_Recordset_task, $maxRows_Recordset_task);
-$Recordset_task = mysql_query($query_limit_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_limit_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
 
 if (isset($_GET['totalRows_Recordset_task'])) {
   $totalRows_Recordset_task = $_GET['totalRows_Recordset_task'];
 } else {
-  $all_Recordset_task = mysql_query($query_Recordset_task);
-  $totalRows_Recordset_task = mysql_num_rows($all_Recordset_task);
+  $all_Recordset_task = mysqli_query($tankdb,$query_Recordset_task);
+  $totalRows_Recordset_task = mysqli_num_rows($all_Recordset_task);
 }
 $totalPages_Recordset_task = ceil($totalRows_Recordset_task/$maxRows_Recordset_task)-1;
 
@@ -92,10 +92,10 @@ if (!empty($_SERVER['QUERY_STRING'])) {
 $queryString_Recordset_task = sprintf("&totalRows_Recordset_task=%d%s", $totalRows_Recordset_task, $queryString_Recordset_task);
 
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_sumlog =  sprintf("SELECT sum(csa_tb_manhour) as sum_hour FROM tk_task_byday WHERE csa_tb_backup3= %s ", GetSQLValueString($colname_DetailRS1, "text"));
-$Recordset_sumlog = mysql_query($query_Recordset_sumlog, $tankdb) or die(mysql_error());
-$row_Recordset_sumlog = mysql_fetch_assoc($Recordset_sumlog);
+$Recordset_sumlog = mysqli_query($tankdb,$query_Recordset_sumlog) or die(mysqli_error());
+$row_Recordset_sumlog = mysqli_fetch_assoc($Recordset_sumlog);
 
 $maxRows_Recordset_comment = 10;
 $pageNum_Recordset_comment = 0;
@@ -104,7 +104,7 @@ if (isset($_GET['pageNum_Recordset_comment'])) {
 }
 $startRow_Recordset_comment = $pageNum_Recordset_comment * $maxRows_Recordset_comment;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_comment = sprintf("SELECT * FROM tk_comment 
 inner join tk_user on tk_comment.tk_comm_user =tk_user.uid 
 								 WHERE tk_comm_pid = %s AND tk_comm_type = 2 
@@ -113,14 +113,14 @@ inner join tk_user on tk_comment.tk_comm_user =tk_user.uid
 								GetSQLValueString($colname_DetailRS1, "text")
 								);
 $query_limit_Recordset_comment = sprintf("%s LIMIT %d, %d", $query_Recordset_comment, $startRow_Recordset_comment, $maxRows_Recordset_comment);
-$Recordset_comment = mysql_query($query_limit_Recordset_comment, $tankdb) or die(mysql_error());
-$row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
+$Recordset_comment = mysqli_query($tankdb,$query_limit_Recordset_comment) or die(mysqli_error());
+$row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
 
 if (isset($_GET['totalRows_Recordset_comment'])) {
   $totalRows_Recordset_comment = $_GET['totalRows_Recordset_comment'];
 } else {
-  $all_Recordset_comment = mysql_query($query_Recordset_comment);
-  $totalRows_Recordset_comment = mysql_num_rows($all_Recordset_comment);
+  $all_Recordset_comment = mysqli_query($tankdb,$query_Recordset_comment);
+  $totalRows_Recordset_comment = mysqli_num_rows($all_Recordset_comment);
 }
 $totalPages_Recordset_comment = ceil($totalRows_Recordset_comment/$maxRows_Recordset_comment)-1;
 
@@ -148,7 +148,7 @@ if (isset($_GET['pageNum_Recordset_file'])) {
 }
 $startRow_Recordset_file = $pageNum_Recordset_file * $maxRows_Recordset_file;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_file = sprintf("SELECT * FROM tk_document 
 inner join tk_user on tk_document.tk_doc_edit =tk_user.uid 
 WHERE tk_doc_class1 = %s AND  tk_doc_class2 = 0 
@@ -157,14 +157,14 @@ WHERE tk_doc_class1 = %s AND  tk_doc_class2 = 0
 								GetSQLValueString($colname_DetailRS1, "text")
 								);
 $query_limit_Recordset_file = sprintf("%s LIMIT %d, %d", $query_Recordset_file, $startRow_Recordset_file, $maxRows_Recordset_file);
-$Recordset_file = mysql_query($query_limit_Recordset_file, $tankdb) or die(mysql_error());
-$row_Recordset_file = mysql_fetch_assoc($Recordset_file);
+$Recordset_file = mysqli_query($tankdb,$query_limit_Recordset_file) or die(mysqli_error());
+$row_Recordset_file = mysqli_fetch_assoc($Recordset_file);
 
 if (isset($_GET['totalRows_Recordset_file'])) {
   $totalRows_Recordset_file = $_GET['totalRows_Recordset_file'];
 } else {
-  $all_Recordset_file = mysql_query($query_Recordset_file);
-  $totalRows_Recordset_file = mysql_num_rows($all_Recordset_file);
+  $all_Recordset_file = mysqli_query($tankdb,$query_Recordset_file);
+  $totalRows_Recordset_file = mysqli_num_rows($all_Recordset_file);
 }
 $totalPages_Recordset_file = ceil($totalRows_Recordset_file/$maxRows_Recordset_file)-1;
 
@@ -218,7 +218,7 @@ if (isset($_GET['logday'])) {
 
 $coldate = $colyear_log.$colmonth_log.$colday_log;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_log = sprintf("SELECT * FROM tk_task_byday 
 								inner join tk_project on tk_task_byday.csa_tb_backup3=tk_project.id 
 								inner join tk_task_tpye on tk_task_byday.csa_tb_backup4=tk_task_tpye.id 
@@ -230,14 +230,14 @@ GetSQLValueString($colname_Recordset_log, "text"),
 GetSQLValueString($coldate . "%", "text")
 );
 $query_limit_Recordset_log = sprintf("%s LIMIT %d, %d", $query_Recordset_log, $startRow_Recordset_log, $maxRows_Recordset_log);
-$Recordset_log = mysql_query($query_limit_Recordset_log, $tankdb) or die(mysql_error());
-$row_Recordset_log = mysql_fetch_assoc($Recordset_log);
+$Recordset_log = mysqli_query($tankdb,$query_limit_Recordset_log) or die(mysqli_error());
+$row_Recordset_log = mysqli_fetch_assoc($Recordset_log);
 
 if (isset($_GET['totalRows_Recordset_log'])) {
   $totalRows_Recordset_log = $_GET['totalRows_Recordset_log'];
 } else {
-  $all_Recordset_log = mysql_query($query_Recordset_log);
-  $totalRows_Recordset_log = mysql_num_rows($all_Recordset_log);
+  $all_Recordset_log = mysqli_query($tankdb,$query_Recordset_log);
+  $totalRows_Recordset_log = mysqli_num_rows($all_Recordset_log);
 }
 $totalPages_Recordset_log = ceil($totalRows_Recordset_log/$maxRows_Recordset_log)-1;
 $queryString_Recordset_log = "";
@@ -557,11 +557,11 @@ echo $editcomment_row;
 	?>	  </td>
     </tr>
 	<?php
-} while ($row_Recordset_comment = mysql_fetch_assoc($Recordset_comment));
-  $rows = mysql_num_rows($Recordset_comment);
+} while ($row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment));
+  $rows = mysqli_num_rows($Recordset_comment);
   if($rows > 0) {
-      mysql_data_seek($Recordset_comment, 0);
-	  $row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
+      mysqli_data_seek($Recordset_comment, 0);
+	  $row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
   }
 ?>
 			</table>
@@ -705,7 +705,7 @@ case 1:
 }
 ?>			</td>
           </tr>
-          <?php } while ($row_Recordset_task = mysql_fetch_assoc($Recordset_task)); ?>
+          <?php } while ($row_Recordset_task = mysqli_fetch_assoc($Recordset_task)); ?>
 		  </tbody>
       </table>
 
@@ -830,11 +830,11 @@ function editfolder<?php echo $row_Recordset_file['docid']; ?>()
     </tr>
     
 	<?php
-} while ($row_Recordset_file = mysql_fetch_assoc($Recordset_file));
-  $rows = mysql_num_rows($Recordset_file);
+} while ($row_Recordset_file = mysqli_fetch_assoc($Recordset_file));
+  $rows = mysqli_num_rows($Recordset_file);
   if($rows > 0) {
-      mysql_data_seek($Recordset_file, 0);
-	  $row_Recordset_file = mysql_fetch_assoc($Recordset_file);
+      mysqli_data_seek($Recordset_file, 0);
+	  $row_Recordset_file = mysqli_fetch_assoc($Recordset_file);
   }
 ?>
 </table>  
@@ -1002,11 +1002,11 @@ function addcomment<?php echo $row_Recordset_log['tbid']; ?>()
   }?></a>  </td>
 </tr>
      <?php
-} while ($row_Recordset_log = mysql_fetch_assoc($Recordset_log));
-  $rows = mysql_num_rows($Recordset_log);
+} while ($row_Recordset_log = mysqli_fetch_assoc($Recordset_log));
+  $rows = mysqli_num_rows($Recordset_log);
   if($rows > 0) {
-      mysql_data_seek($Recordset_log, 0);
-	  $row_Recordset_log = mysql_fetch_assoc($Recordset_log);
+      mysqli_data_seek($Recordset_log, 0);
+	  $row_Recordset_log = mysqli_fetch_assoc($Recordset_log);
   }
 ?>
 </tbody>
@@ -1056,6 +1056,6 @@ function addcomment<?php echo $row_Recordset_log['tbid']; ?>()
 
 </body>
 </html><?php
-mysql_free_result($DetailRS1);
-mysql_free_result($Recordset_task);
+mysqli_free_result($DetailRS1);
+mysqli_free_result($Recordset_task);
 ?>

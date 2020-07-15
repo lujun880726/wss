@@ -3,11 +3,11 @@
 
 $colname_Recordset_anc = "2";
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_anc = sprintf("SELECT * FROM tk_announcement WHERE tk_anc_type = %s ORDER BY tk_anc_lastupdate DESC", GetSQLValueString($colname_Recordset_anc, "text"));
-$Recordset_anc = mysql_query($query_Recordset_anc, $tankdb) or die(mysql_error());
-$row_Recordset_anc = mysql_fetch_assoc($Recordset_anc);
-$totalRows_Recordset_anc = mysql_num_rows($Recordset_anc);
+$Recordset_anc = mysqli_query($tankdb,$query_Recordset_anc) or die(mysqli_error());
+$row_Recordset_anc = mysqli_fetch_assoc($Recordset_anc);
+$totalRows_Recordset_anc = mysqli_num_rows($Recordset_anc);
 
 $message_count = check_message( $_SESSION['MM_uid'] );
 
@@ -184,7 +184,7 @@ $.ajax({
 			<a href="announcement_view.php?recordID=<?php echo $row_Recordset_anc['AID']; ?>">
 			<?php echo $row_Recordset_anc['tk_anc_title']; ?> &nbsp; <?php echo $row_Recordset_anc['tk_anc_lastupdate']; ?>
 			</a><br />
-			<?php } while ($row_Recordset_anc = mysql_fetch_assoc($Recordset_anc)); ?>
+			<?php } while ($row_Recordset_anc = mysqli_fetch_assoc($Recordset_anc)); ?>
 	</div>
 </div> 
 
@@ -233,5 +233,5 @@ function MaxRoll(){
   
   
   <?php
-mysql_free_result($Recordset_anc);
+mysqli_free_result($Recordset_anc);
 ?>

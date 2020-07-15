@@ -14,7 +14,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -57,8 +57,8 @@ if ((isset($_GET['delID'])) && ($_GET['delID'] != "") && ($_SESSION['MM_Username
   $deleteSQL = sprintf("DELETE FROM tk_document WHERE docid=%s",
                        GetSQLValueString($_GET['delID'], "int"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($deleteSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$deleteSQL) or die(mysqli_error());
 
 
   $deleteGoTo = $pageurl;

@@ -12,11 +12,11 @@ $colname_Recordset1 = "-1";
 if (isset($_GET['UID'])) {
   $colname_Recordset1 = $_GET['UID'];
 }
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT * FROM tk_user WHERE uid = %s", GetSQLValueString($colname_Recordset1, "text"));
-$Recordset1 = mysql_query($query_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
-$totalRows_Recordset1 = mysql_num_rows($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
+$totalRows_Recordset1 = mysqli_num_rows($Recordset1);
 
 $restrictGoTo = "user_error3.php";
 if ($row_Recordset1['uid'] <> $_SESSION['MM_uid'] && $_SESSION['MM_rank'] < "5") {   
@@ -54,8 +54,8 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "form1")) {
                        GetSQLValueString($_POST['tk_user_rank'], "text"),
                        GetSQLValueString($_POST['ID'], "int"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
 
   $updateGoTo = "user_view.php?recordID=$colname_Recordset1";
   if (isset($_SERVER['QUERY_STRING'])) {
@@ -310,5 +310,5 @@ window.onload = function()
 
 <?php require('foot.php'); ?>
 </body></html><?php
-mysql_free_result($Recordset1);
+mysqli_free_result($Recordset1);
 ?>

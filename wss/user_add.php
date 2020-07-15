@@ -14,9 +14,9 @@ if (isset($_POST[$MM_flag])) {
   $MM_dupKeyRedirect="user_error.php";
   $loginUsername = $_POST['tk_user_login'];
   $LoginRS__query = sprintf("SELECT tk_user_login FROM tk_user WHERE tk_user_login=%s", GetSQLValueString($loginUsername, "text"));
-  mysql_select_db($database_tankdb, $tankdb);
-  $LoginRS=mysql_query($LoginRS__query, $tankdb) or die(mysql_error());
-  $loginFoundUser = mysql_num_rows($LoginRS);
+  mysqli_select_db($tankdb,$database_tankdb);
+  $LoginRS=mysqli_query($tankdb,$LoginRS__query) or die(mysqli_error());
+  $loginFoundUser = mysqli_num_rows($LoginRS);
 
   //if there is a row in the database, the username was found - can not add the requested username
   if($loginFoundUser){
@@ -66,8 +66,8 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form1")) {
                        GetSQLValueString($_POST['tk_display_name'], "text"),
                        GetSQLValueString($_POST['tk_user_rank'], "text"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($insertSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$insertSQL) or die(mysqli_error());
 
   $insertGoTo = "default_user.php";
   if (isset($_SERVER['QUERY_STRING'])) {

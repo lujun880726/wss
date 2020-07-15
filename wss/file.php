@@ -77,7 +77,7 @@ $multilingual_breadcrumb_filelist = $multilingual_project_file_myeditfile;
 $multilingual_breadcrumb_filelist = $multilingual_project_file_allfile;
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_DetailRS1 = sprintf("SELECT *, 
 tk_user1.tk_display_name as tk_display_name1, 
 tk_user2.tk_display_name as tk_display_name2 FROM tk_document 
@@ -86,30 +86,30 @@ inner join tk_user as tk_user2 on tk_document.tk_doc_edit=tk_user2.uid
 $inproject 
 WHERE tk_document.docid = %s", GetSQLValueString($colname_DetailRS1, "int"));
 $query_limit_DetailRS1 = sprintf("%s LIMIT %d, %d", $query_DetailRS1, $startRow_DetailRS1, $maxRows_DetailRS1);
-$DetailRS1 = mysql_query($query_limit_DetailRS1, $tankdb) or die(mysql_error());
-$row_DetailRS1 = mysql_fetch_assoc($DetailRS1);
+$DetailRS1 = mysqli_query($tankdb,$query_limit_DetailRS1) or die(mysqli_error());
+$row_DetailRS1 = mysqli_fetch_assoc($DetailRS1);
 
 if (isset($_GET['totalRows_DetailRS1'])) {
   $totalRows_DetailRS1 = $_GET['totalRows_DetailRS1'];
 } else {
-  $all_DetailRS1 = mysql_query($query_DetailRS1);
-  $totalRows_DetailRS1 = mysql_num_rows($all_DetailRS1);
+  $all_DetailRS1 = mysqli_query($tankdb,$query_DetailRS1);
+  $totalRows_DetailRS1 = mysqli_num_rows($all_DetailRS1);
 }
 $totalPages_DetailRS1 = ceil($totalRows_DetailRS1/$maxRows_DetailRS1)-1;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_projectname = sprintf("SELECT * FROM tk_project 
 inner join tk_user on tk_project.project_to_user=tk_user.uid 
 WHERE tk_project.id = %s", GetSQLValueString($project_id, "int"));
-$projectname = mysql_query($query_projectname, $tankdb) or die(mysql_error());
-$row_projectname = mysql_fetch_assoc($projectname);
+$projectname = mysqli_query($tankdb,$query_projectname) or die(mysqli_error());
+$row_projectname = mysqli_fetch_assoc($projectname);
 
 $fileid = $row_DetailRS1['tk_doc_class2'];
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_pfilename = sprintf("SELECT * FROM tk_document WHERE docid = %s", GetSQLValueString($fileid, "int"));
-$Recordset_pfilename = mysql_query($query_Recordset_pfilename, $tankdb) or die(mysql_error());
-$row_Recordset_pfilename = mysql_fetch_assoc($Recordset_pfilename);
-$totalRows_Recordset_pfilename = mysql_num_rows($Recordset_pfilename);
+$Recordset_pfilename = mysqli_query($tankdb,$query_Recordset_pfilename) or die(mysqli_error());
+$row_Recordset_pfilename = mysqli_fetch_assoc($Recordset_pfilename);
+$totalRows_Recordset_pfilename = mysqli_num_rows($Recordset_pfilename);
 
 $maxRows_Recordset_file = 20;
 $pageNum_Recordset_file = 0;
@@ -145,7 +145,7 @@ $where1 = "";
 $where2 = "";
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_file = sprintf("SELECT * FROM tk_document 
 inner join tk_user on tk_document.tk_doc_edit =tk_user.uid 
 $where1 
@@ -155,14 +155,14 @@ WHERE $inprolist
 								GetSQLValueString($inprolists, "text")
 								);
 $query_limit_Recordset_file = sprintf("%s LIMIT %d, %d", $query_Recordset_file, $startRow_Recordset_file, $maxRows_Recordset_file);
-$Recordset_file = mysql_query($query_limit_Recordset_file, $tankdb) or die(mysql_error());
-$row_Recordset_file = mysql_fetch_assoc($Recordset_file);
+$Recordset_file = mysqli_query($tankdb,$query_limit_Recordset_file) or die(mysqli_error());
+$row_Recordset_file = mysqli_fetch_assoc($Recordset_file);
 
 if (isset($_GET['totalRows_Recordset_file'])) {
   $totalRows_Recordset_file = $_GET['totalRows_Recordset_file'];
 } else {
-  $all_Recordset_file = mysql_query($query_Recordset_file);
-  $totalRows_Recordset_file = mysql_num_rows($all_Recordset_file);
+  $all_Recordset_file = mysqli_query($tankdb,$query_Recordset_file);
+  $totalRows_Recordset_file = mysqli_num_rows($all_Recordset_file);
 }
 $totalPages_Recordset_file = ceil($totalRows_Recordset_file/$maxRows_Recordset_file)-1;
 
@@ -190,7 +190,7 @@ if (isset($_GET['pageNum_Recordset_actlog'])) {
 }
 $startRow_Recordset_actlog = $pageNum_Recordset_actlog * $maxRows_Recordset_actlog;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_actlog = sprintf("SELECT * FROM tk_log 
 inner join tk_user on tk_log.tk_log_user =tk_user.uid 
 								 WHERE tk_log_type = %s AND tk_log_class = 2 
@@ -199,14 +199,14 @@ inner join tk_user on tk_log.tk_log_user =tk_user.uid
 								GetSQLValueString($docid, "text")
 								);
 $query_limit_Recordset_actlog = sprintf("%s LIMIT %d, %d", $query_Recordset_actlog, $startRow_Recordset_actlog, $maxRows_Recordset_actlog);
-$Recordset_actlog = mysql_query($query_limit_Recordset_actlog, $tankdb) or die(mysql_error());
-$row_Recordset_actlog = mysql_fetch_assoc($Recordset_actlog);
+$Recordset_actlog = mysqli_query($tankdb,$query_limit_Recordset_actlog) or die(mysqli_error());
+$row_Recordset_actlog = mysqli_fetch_assoc($Recordset_actlog);
 
 if (isset($_GET['totalRows_Recordset_actlog'])) {
   $totalRows_Recordset_actlog = $_GET['totalRows_Recordset_actlog'];
 } else {
-  $all_Recordset_actlog = mysql_query($query_Recordset_actlog);
-  $totalRows_Recordset_actlog = mysql_num_rows($all_Recordset_actlog);
+  $all_Recordset_actlog = mysqli_query($tankdb,$query_Recordset_actlog);
+  $totalRows_Recordset_actlog = mysqli_num_rows($all_Recordset_actlog);
 }
 $totalPages_Recordset_actlog = ceil($totalRows_Recordset_actlog/$maxRows_Recordset_actlog)-1;
 
@@ -262,21 +262,21 @@ if (isset($_GET['inputtitle'])) {
   $colinputtitle_Recordset1 = $_GET['inputtitle'];
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT * FROM tk_project 
 							
 							inner join tk_user on tk_project.project_to_user=tk_user.uid
 							WHERE project_name LIKE %s ORDER BY tk_project.project_lastupdate DESC",  
 GetSQLValueString("%" . $colinputtitle_Recordset1 . "%", "text"));
 $query_limit_Recordset1 = sprintf("%s LIMIT %d, %d", $query_Recordset1, $startRow_Recordset1, $maxRows_Recordset1);
-$Recordset1 = mysql_query($query_limit_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_limit_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 
 if (isset($_GET['totalRows_Recordset1'])) {
   $totalRows_Recordset1 = $_GET['totalRows_Recordset1'];
 } else {
-  $all_Recordset1 = mysql_query($query_Recordset1);
-  $totalRows_Recordset1 = mysql_num_rows($all_Recordset1);
+  $all_Recordset1 = mysqli_query($tankdb,$query_Recordset1);
+  $totalRows_Recordset1 = mysqli_num_rows($all_Recordset1);
 }
 $totalPages_Recordset1 = ceil($totalRows_Recordset1/$maxRows_Recordset1)-1;
 

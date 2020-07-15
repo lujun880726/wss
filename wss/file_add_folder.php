@@ -54,10 +54,10 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "form1")) {
                        GetSQLValueString($_POST['tk_doc_edit'], "text"),
                        GetSQLValueString($_POST['tk_doc_backup1'], "text"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($insertSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$insertSQL) or die(mysqli_error());
 
-  $newID = mysql_insert_id();
+  $newID = mysqli_insert_id();
   $docID = $newID;
   $newName = $_SESSION['MM_uid'];
 
@@ -65,7 +65,7 @@ $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_ty
                        GetSQLValueString($newName, "text"),
                        GetSQLValueString($multilingual_log_adddoc, "text"),
                        GetSQLValueString($docID, "text"));  
-  $Result2 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());
+  $Result2 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 
 if ( $pfiles== "1") {
 	  $pf = "&pfile=1";

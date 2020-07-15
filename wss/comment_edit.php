@@ -14,7 +14,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -71,8 +71,8 @@ if ((isset($_POST["comment_update"])) && ($_POST["comment_update"] == "form1")) 
                        GetSQLValueString($nowuser, "text"),
                        GetSQLValueString($commentid, "int"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
 
 if ($date == "-1"){
   $updateGoTo = "log_finish.php";
@@ -87,11 +87,11 @@ if ($date == "-1"){
 }
 
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_comment = sprintf("SELECT * FROM tk_comment WHERE coid = %s", GetSQLValueString($commentid, "int"));
-$Recordset_comment = mysql_query($query_Recordset_comment, $tankdb) or die(mysql_error());
-$row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
-$totalRows_Recordset_comment = mysql_num_rows($Recordset_comment);
+$Recordset_comment = mysqli_query($tankdb,$query_Recordset_comment) or die(mysqli_error());
+$row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
+$totalRows_Recordset_comment = mysqli_num_rows($Recordset_comment);
 
 $comuser = $row_Recordset_comment['tk_comm_user'];
 

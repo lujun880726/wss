@@ -11,7 +11,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -34,15 +34,15 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
   return $theValue;
 }
 }
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_log =  sprintf("SELECT * FROM tk_task_byday 
 inner join tk_status on tk_task_byday.csa_tb_status=tk_status.id 
 WHERE csa_tb_year= %s AND csa_tb_backup1= %s",    
                        GetSQLValueString($logdate, "text"),  
                        GetSQLValueString($taskid, "int"));
-$log = mysql_query($query_log, $tankdb) or die(mysql_error());
-$row_log = mysql_fetch_assoc($log);
-$totalRows_log = mysql_num_rows($log);
+$log = mysqli_query($tankdb,$query_log) or die(mysqli_error());
+$row_log = mysqli_fetch_assoc($log);
+$totalRows_log = mysqli_num_rows($log);
 
 $currentPage = $_SERVER["PHP_SELF"];
 
@@ -55,7 +55,7 @@ $startRow_Recordset_comment = $pageNum_Recordset_comment * $maxRows_Recordset_co
 
 $logid = $row_log['tbid'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_comment = sprintf("SELECT * FROM tk_comment 
 inner join tk_user on tk_comment.tk_comm_user =tk_user.uid 
 								 WHERE tk_comm_pid = %s AND tk_comm_type = 3 
@@ -64,14 +64,14 @@ inner join tk_user on tk_comment.tk_comm_user =tk_user.uid
 								GetSQLValueString($logid, "text")
 								);
 $query_limit_Recordset_comment = sprintf("%s LIMIT %d, %d", $query_Recordset_comment, $startRow_Recordset_comment, $maxRows_Recordset_comment);
-$Recordset_comment = mysql_query($query_limit_Recordset_comment, $tankdb) or die(mysql_error());
-$row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
+$Recordset_comment = mysqli_query($tankdb,$query_limit_Recordset_comment) or die(mysqli_error());
+$row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
 
 if (isset($_GET['totalRows_Recordset_comment'])) {
   $totalRows_Recordset_comment = $_GET['totalRows_Recordset_comment'];
 } else {
-  $all_Recordset_comment = mysql_query($query_Recordset_comment);
-  $totalRows_Recordset_comment = mysql_num_rows($all_Recordset_comment);
+  $all_Recordset_comment = mysqli_query($tankdb,$query_Recordset_comment);
+  $totalRows_Recordset_comment = mysqli_num_rows($all_Recordset_comment);
 }
 $totalPages_Recordset_comment = ceil($totalRows_Recordset_comment/$maxRows_Recordset_comment)-1;
 
@@ -259,11 +259,11 @@ $logmonth = str_split($logyear[1],2);
     </tr>
 
 	<?php
-} while ($row_Recordset_comment = mysql_fetch_assoc($Recordset_comment));
-  $rows = mysql_num_rows($Recordset_comment);
+} while ($row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment));
+  $rows = mysqli_num_rows($Recordset_comment);
   if($rows > 0) {
-      mysql_data_seek($Recordset_comment, 0);
-	  $row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
+      mysqli_data_seek($Recordset_comment, 0);
+	  $row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
   }
 ?>
               </table>

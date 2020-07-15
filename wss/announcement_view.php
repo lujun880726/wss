@@ -13,17 +13,17 @@ $colname_DetailRS1 = "-1";
 if (isset($_GET['recordID'])) {
   $colname_DetailRS1 = $_GET['recordID'];
 }
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_DetailRS1 = sprintf("SELECT * FROM tk_announcement inner join tk_user on tk_announcement.tk_anc_create=tk_user.uid  WHERE tk_announcement.AID = %s ORDER BY tk_anc_lastupdate DESC", GetSQLValueString($colname_DetailRS1, "int"));
 $query_limit_DetailRS1 = sprintf("%s LIMIT %d, %d", $query_DetailRS1, $startRow_DetailRS1, $maxRows_DetailRS1);
-$DetailRS1 = mysql_query($query_limit_DetailRS1, $tankdb) or die(mysql_error());
-$row_DetailRS1 = mysql_fetch_assoc($DetailRS1);
+$DetailRS1 = mysqli_query($tankdb,$query_limit_DetailRS1) or die(mysqli_error());
+$row_DetailRS1 = mysqli_fetch_assoc($DetailRS1);
 
 if (isset($_GET['totalRows_DetailRS1'])) {
   $totalRows_DetailRS1 = $_GET['totalRows_DetailRS1'];
 } else {
-  $all_DetailRS1 = mysql_query($query_DetailRS1);
-  $totalRows_DetailRS1 = mysql_num_rows($all_DetailRS1);
+  $all_DetailRS1 = mysqli_query($tankdb,$query_DetailRS1);
+  $totalRows_DetailRS1 = mysqli_num_rows($all_DetailRS1);
 }
 $totalPages_DetailRS1 = ceil($totalRows_DetailRS1/$maxRows_DetailRS1)-1;
 ?>
@@ -83,5 +83,5 @@ $totalPages_DetailRS1 = ceil($totalRows_DetailRS1/$maxRows_DetailRS1)-1;
 <?php require('foot.php'); ?>
 </body>
 </html><?php
-mysql_free_result($DetailRS1);
+mysqli_free_result($DetailRS1);
 ?>

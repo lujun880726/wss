@@ -10,7 +10,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -136,13 +136,13 @@ $colinputtitle ="%" . $colinputtitle_Recordset1 . "%";
 $date = date('Y-m-d');
 $filename = $multilingual_global_excelfile.$date.".csv";
 
-// Êä³öExcelÎÄ¼þÍ·£¬¿É°Ñuser.csv»»³ÉÄãÒªµÄÎÄ¼þÃû
+// ï¿½ï¿½ï¿½Excelï¿½Ä¼ï¿½Í·ï¿½ï¿½ï¿½É°ï¿½user.csvï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½
 header('Content-Type: application/vnd.ms-excel');
 header("Content-Disposition: attachment;filename=$filename");
 header('Cache-Control: max-age=0');
 
-// ´ÓÊý¾Ý¿âÖÐ»ñÈ¡Êý¾Ý£¬ÎªÁË½ÚÊ¡ÄÚ´æ£¬²»Òª°ÑÊý¾ÝÒ»´ÎÐÔ¶Áµ½ÄÚ´æ£¬´Ó¾ä±úÖÐÒ»ÐÐÒ»ÐÐ¶Á¼´¿É
-mysql_select_db($database_tankdb, $tankdb);
+// ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½Ð»ï¿½È¡ï¿½ï¿½ï¿½Ý£ï¿½Îªï¿½Ë½ï¿½Ê¡ï¿½Ú´æ£¬ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½Ú´æ£¬ï¿½Ó¾ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ò»ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½
+mysqli_select_db($tankdb,$database_tankdb);
 $sql = sprintf("SELECT TID, 
 							
 							tk_project.project_name as project_name_prt, 
@@ -209,35 +209,35 @@ $sql = sprintf("SELECT TID,
 							);
 						
 							
-$stmt  = mysql_query($sql, $tankdb) or die(mysql_error());
+$stmt  = mysqli_query($tankdb,$sql) or die(mysqli_error());
   
-// ´ò¿ªPHPÎÄ¼þ¾ä±ú£¬php://output ±íÊ¾Ö±½ÓÊä³öµ½ä¯ÀÀÆ÷
+// ï¿½ï¿½PHPï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½php://output ï¿½ï¿½Ê¾Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 $fp = fopen('php://output', 'a');
   
-// Êä³öExcelÁÐÃûÐÅÏ¢
+// ï¿½ï¿½ï¿½Excelï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 $head = array("id","$multilingual_default_task_project","$multilingual_default_task_type","$multilingual_default_task_title","$multilingual_default_task_to","$multilingual_default_task_from","$multilingual_default_task_status","$multilingual_default_task_priority","$multilingual_default_tasklevel","$multilingual_default_task_planstart","$multilingual_default_task_planend","$multilingual_default_task_description");
 
 foreach ($head as $i => $v) {
-    // CSVµÄExcelÖ§³ÖGBK±àÂë£¬Ò»¶¨Òª×ª»»£¬·ñÔòÂÒÂë
+    // CSVï¿½ï¿½ExcelÖ§ï¿½ï¿½GBKï¿½ï¿½ï¿½ë£¬Ò»ï¿½ï¿½Òª×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     $head[$i] = iconv('utf-8', 'gbk', $v);
 }
   
-// ½«Êý¾ÝÍ¨¹ýfputcsvÐ´µ½ÎÄ¼þ¾ä±ú
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½fputcsvÐ´ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½
 fputcsv($fp, $head);
   
-// ¼ÆÊýÆ÷
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 $cnt = 0;
-// Ã¿¸ô$limitÐÐ£¬Ë¢ÐÂÒ»ÏÂÊä³öbuffer£¬²»ÒªÌ«´ó£¬Ò²²»ÒªÌ«Ð¡
+// Ã¿ï¿½ï¿½$limitï¿½Ð£ï¿½Ë¢ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½bufferï¿½ï¿½ï¿½ï¿½ÒªÌ«ï¿½ï¿½Ò²ï¿½ï¿½ÒªÌ«Ð¡
 $limit = 100000;
 
 
 
-// ÖðÐÐÈ¡³öÊý¾Ý£¬²»ÀË·ÑÄÚ´æ
+// ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½Ë·ï¿½ï¿½Ú´ï¿½
 
-while($row=mysql_fetch_assoc($stmt)){ 
+while($row=mysqli_fetch_assoc($stmt)){
   
     $cnt ++;
-   if ($limit == $cnt) { //Ë¢ÐÂÒ»ÏÂÊä³öbuffer£¬·ÀÖ¹ÓÉÓÚÊý¾Ý¹ý¶àÔì³ÉÎÊÌâ
+   if ($limit == $cnt) { //Ë¢ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½bufferï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         ob_flush();
         flush();
         $cnt = 0;

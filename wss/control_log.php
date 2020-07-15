@@ -62,7 +62,7 @@ $where = "";
 			//	$where.= " csa_tb_year LIKE $coldate";
 			//}
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_log = "SELECT * FROM tk_task_byday 
 								inner join tk_project on tk_task_byday.csa_tb_backup3=tk_project.id 
 								inner join tk_task_tpye on tk_task_byday.csa_tb_backup4=tk_task_tpye.id 
@@ -72,14 +72,14 @@ $query_Recordset_log = "SELECT * FROM tk_task_byday
 
 ORDER BY csa_tb_lastupdate DESC" ;
 $query_limit_Recordset_log = sprintf("%s LIMIT %d, %d", $query_Recordset_log, $startRow_Recordset_log, $maxRows_Recordset_log);
-$Recordset_log = mysql_query($query_limit_Recordset_log, $tankdb) or die(mysql_error());
-$row_Recordset_log = mysql_fetch_assoc($Recordset_log);
+$Recordset_log = mysqli_query($tankdb,$query_limit_Recordset_log) or die(mysqli_error());
+$row_Recordset_log = mysqli_fetch_assoc($Recordset_log);
 
 if (isset($_GET['totalRows_Recordset_log'])) {
   $totalRows_Recordset_log = $_GET['totalRows_Recordset_log'];
 } else {
-  $all_Recordset_log = mysql_query($query_Recordset_log);
-  $totalRows_Recordset_log = mysql_num_rows($all_Recordset_log);
+  $all_Recordset_log = mysqli_query($tankdb,$query_Recordset_log);
+  $totalRows_Recordset_log = mysqli_num_rows($all_Recordset_log);
 }
 $totalPages_Recordset_log = ceil($totalRows_Recordset_log/$maxRows_Recordset_log)-1;
 $queryString_Recordset_log = "";
@@ -528,11 +528,11 @@ function addcomment<?php echo $row_Recordset_log['tbid']; ?>()
   }?></a>  </td>
 </tr>
      <?php
-} while ($row_Recordset_log = mysql_fetch_assoc($Recordset_log));
-  $rows = mysql_num_rows($Recordset_log);
+} while ($row_Recordset_log = mysqli_fetch_assoc($Recordset_log));
+  $rows = mysqli_num_rows($Recordset_log);
   if($rows > 0) {
-      mysql_data_seek($Recordset_log, 0);
-	  $row_Recordset_log = mysql_fetch_assoc($Recordset_log);
+      mysqli_data_seek($Recordset_log, 0);
+	  $row_Recordset_log = mysqli_fetch_assoc($Recordset_log);
   }
 ?>
 </tbody>

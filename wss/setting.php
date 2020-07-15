@@ -9,7 +9,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -38,13 +38,13 @@ if (isset($_GET['type'])) {
   $item_type = $_GET['type'];
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT * FROM tk_item WHERE tk_item_type = %s ", 
 								GetSQLValueString($item_type, "text")
 								);
-$Recordset1 = mysql_query($query_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
-$totalRows_Recordset1 = mysql_num_rows($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
+$totalRows_Recordset1 = mysqli_num_rows($Recordset1);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -107,7 +107,7 @@ $totalRows_Recordset1 = mysql_num_rows($Recordset1);
 	<tr>
 	<td>&nbsp;</td>
 	</tr>
-<?php } while ($row_Recordset1 = mysql_fetch_assoc($Recordset1)); ?>
+<?php } while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1)); ?>
 </table>
 
 <p>&nbsp;</p>
@@ -118,5 +118,5 @@ $totalRows_Recordset1 = mysql_num_rows($Recordset1);
 </body>
 </html>
 <?php
-mysql_free_result($Recordset1);
+mysqli_free_result($Recordset1);
 ?>

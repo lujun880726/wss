@@ -13,7 +13,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -56,11 +56,11 @@ if (isset($_GET['tid'])) {
   $tid = $_GET['tid'];
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_comment = sprintf("SELECT * FROM tk_comment WHERE coid = %s", GetSQLValueString($_GET['delID'], "int"));
-$Recordset_comment = mysql_query($query_Recordset_comment, $tankdb) or die(mysql_error());
-$row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
-$totalRows_Recordset_comment = mysql_num_rows($Recordset_comment);
+$Recordset_comment = mysqli_query($tankdb,$query_Recordset_comment) or die(mysqli_error());
+$row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
+$totalRows_Recordset_comment = mysqli_num_rows($Recordset_comment);
 
 $comuser = $row_Recordset_comment['tk_comm_user'];
 
@@ -75,13 +75,13 @@ if ((isset($_GET['delID'])) && ($_GET['delID'] != "") && ($_SESSION['MM_Username
   $deleteSQL = sprintf("DELETE FROM tk_comment WHERE coid=%s",
                        GetSQLValueString($_GET['delID'], "int"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($deleteSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$deleteSQL) or die(mysqli_error());
 
 if ($row_Recordset_comment['tk_comm_type'] == 3) {
   $updateSQL = sprintf("UPDATE tk_task_byday SET csa_tb_comment=csa_tb_comment-1 WHERE tbid=%s", GetSQLValueString($row_Recordset_comment['tk_comm_pid'], "int"));
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
 }
 
 if( $projectid== "-1"){

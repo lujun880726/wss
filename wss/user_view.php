@@ -15,17 +15,17 @@ $colname_DetailRS1 = "-1";
 if (isset($_GET['recordID'])) {
   $colname_DetailRS1 = $_GET['recordID'];
 }
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_DetailRS1 = sprintf("SELECT * FROM tk_user WHERE uid = %s", GetSQLValueString($colname_DetailRS1, "text"));
 $query_limit_DetailRS1 = sprintf("%s LIMIT %d, %d", $query_DetailRS1, $startRow_DetailRS1, $maxRows_DetailRS1);
-$DetailRS1 = mysql_query($query_limit_DetailRS1, $tankdb) or die(mysql_error());
-$row_DetailRS1 = mysql_fetch_assoc($DetailRS1);
+$DetailRS1 = mysqli_query($tankdb,$query_limit_DetailRS1) or die(mysqli_error());
+$row_DetailRS1 = mysqli_fetch_assoc($DetailRS1);
 
 if (isset($_GET['totalRows_DetailRS1'])) {
   $totalRows_DetailRS1 = $_GET['totalRows_DetailRS1'];
 } else {
-  $all_DetailRS1 = mysql_query($query_DetailRS1);
-  $totalRows_DetailRS1 = mysql_num_rows($all_DetailRS1);
+  $all_DetailRS1 = mysqli_query($tankdb,$query_DetailRS1);
+  $totalRows_DetailRS1 = mysqli_num_rows($all_DetailRS1);
 }
 $totalPages_DetailRS1 = ceil($totalRows_DetailRS1/$maxRows_DetailRS1)-1;
 
@@ -38,17 +38,17 @@ $startRow_Recordset_prj = $pageNum_Recordset_prj * $maxRows_Recordset_prj;
 
 $colname_Recordset_prj = $row_DetailRS1['uid'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_prj = sprintf("SELECT * FROM tk_project inner join tk_status_project on tk_project.project_status=tk_status_project.psid WHERE project_to_user = %s ORDER BY project_lastupdate DESC", GetSQLValueString($colname_Recordset_prj, "text"));
 $query_limit_Recordset_prj = sprintf("%s LIMIT %d, %d", $query_Recordset_prj, $startRow_Recordset_prj, $maxRows_Recordset_prj);
-$Recordset_prj = mysql_query($query_limit_Recordset_prj, $tankdb) or die(mysql_error());
-$row_Recordset_prj = mysql_fetch_assoc($Recordset_prj);
+$Recordset_prj = mysqli_query($tankdb,$query_limit_Recordset_prj) or die(mysqli_error());
+$row_Recordset_prj = mysqli_fetch_assoc($Recordset_prj);
 
 if (isset($_GET['totalRows_Recordset_prj'])) {
   $totalRows_Recordset_prj = $_GET['totalRows_Recordset_prj'];
 } else {
-  $all_Recordset_prj = mysql_query($query_Recordset_prj);
-  $totalRows_Recordset_prj = mysql_num_rows($all_Recordset_prj);
+  $all_Recordset_prj = mysqli_query($tankdb,$query_Recordset_prj);
+  $totalRows_Recordset_prj = mysqli_num_rows($all_Recordset_prj);
 }
 $totalPages_Recordset_prj = ceil($totalRows_Recordset_prj/$maxRows_Recordset_prj)-1;
 $queryString_Recordset_prj = "";
@@ -100,7 +100,7 @@ if (isset($_GET['logday'])) {
 
 $coldate = $colyear_log.$colmonth_log.$colday_log;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_log = sprintf("SELECT * FROM tk_task_byday 
 								inner join tk_project on tk_task_byday.csa_tb_backup3=tk_project.id 
 								inner join tk_task_tpye on tk_task_byday.csa_tb_backup4=tk_task_tpye.id 
@@ -111,14 +111,14 @@ GetSQLValueString($colname_Recordset_log, "text"),
 GetSQLValueString($coldate . "%", "text")
 );
 $query_limit_Recordset_log = sprintf("%s LIMIT %d, %d", $query_Recordset_log, $startRow_Recordset_log, $maxRows_Recordset_log);
-$Recordset_log = mysql_query($query_limit_Recordset_log, $tankdb) or die(mysql_error());
-$row_Recordset_log = mysql_fetch_assoc($Recordset_log);
+$Recordset_log = mysqli_query($tankdb,$query_limit_Recordset_log) or die(mysqli_error());
+$row_Recordset_log = mysqli_fetch_assoc($Recordset_log);
 
 if (isset($_GET['totalRows_Recordset_log'])) {
   $totalRows_Recordset_log = $_GET['totalRows_Recordset_log'];
 } else {
-  $all_Recordset_log = mysql_query($query_Recordset_log);
-  $totalRows_Recordset_log = mysql_num_rows($all_Recordset_log);
+  $all_Recordset_log = mysqli_query($tankdb,$query_Recordset_log);
+  $totalRows_Recordset_log = mysqli_num_rows($all_Recordset_log);
 }
 $totalPages_Recordset_log = ceil($totalRows_Recordset_log/$maxRows_Recordset_log)-1;
 $queryString_Recordset_log = "";
@@ -148,7 +148,7 @@ $startRow_Recordset_task = $pageNum_Recordset_task * $maxRows_Recordset_task;
 
 $colname_Recordset_task = $row_DetailRS1['uid'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_task = sprintf("SELECT *, 
 							
 							tk_project.project_name as project_name_prt 
@@ -164,14 +164,14 @@ $query_Recordset_task = sprintf("SELECT *,
 								GetSQLValueString($colname_Recordset_task, "text")
 								);
 $query_limit_Recordset_task = sprintf("%s LIMIT %d, %d", $query_Recordset_task, $startRow_Recordset_task, $maxRows_Recordset_task);
-$Recordset_task = mysql_query($query_limit_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_limit_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
 
 if (isset($_GET['totalRows_Recordset_task'])) {
   $totalRows_Recordset_task = $_GET['totalRows_Recordset_task'];
 } else {
-  $all_Recordset_task = mysql_query($query_Recordset_task);
-  $totalRows_Recordset_task = mysql_num_rows($all_Recordset_task);
+  $all_Recordset_task = mysqli_query($tankdb,$query_Recordset_task);
+  $totalRows_Recordset_task = mysqli_num_rows($all_Recordset_task);
 }
 $totalPages_Recordset_task = ceil($totalRows_Recordset_task/$maxRows_Recordset_task)-1;
 
@@ -192,7 +192,7 @@ if (!empty($_SERVER['QUERY_STRING'])) {
 }
 $queryString_Recordset_task = sprintf("&totalRows_Recordset_task=%d%s", $totalRows_Recordset_task, $queryString_Recordset_task);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_sumtotal = sprintf("SELECT 
 							sum(csa_tb_manhour) as sum_hour, 
 							COUNT(*) as count_user_log   
@@ -201,15 +201,15 @@ $query_Recordset_sumtotal = sprintf("SELECT
 							WHERE csa_tb_backup2 = %s", 
 								GetSQLValueString($colname_Recordset_task, "text")
 								);
-$Recordset_sumtotal = mysql_query($query_Recordset_sumtotal, $tankdb) or die(mysql_error());
-$row_Recordset_sumtotal = mysql_fetch_assoc($Recordset_sumtotal);
+$Recordset_sumtotal = mysqli_query($tankdb,$query_Recordset_sumtotal) or die(mysqli_error());
+$row_Recordset_sumtotal = mysqli_fetch_assoc($Recordset_sumtotal);
 $user_totalhour=$row_Recordset_sumtotal['sum_hour']; 
 $user_totallog=$row_Recordset_sumtotal['count_user_log'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_countuser = "SELECT COUNT(*) as count_user FROM tk_user WHERE tk_user_rank NOT LIKE '0'";
-$Recordset_countuser = mysql_query($query_Recordset_countuser, $tankdb) or die(mysql_error());
-$row_Recordset_countuser = mysql_fetch_assoc($Recordset_countuser);
+$Recordset_countuser = mysqli_query($tankdb,$query_Recordset_countuser) or die(mysqli_error());
+$row_Recordset_countuser = mysqli_fetch_assoc($Recordset_countuser);
 
 ?>
 <?php require('head.php'); ?>
@@ -638,11 +638,11 @@ echo $logyear[0]; ?>-<?php echo $logmonth[0]; ?>-<?php echo $logmonth[1]; ?>
 </td>
 </tr>
      <?php
-} while ($row_Recordset_log = mysql_fetch_assoc($Recordset_log));
-  $rows = mysql_num_rows($Recordset_log);
+} while ($row_Recordset_log = mysqli_fetch_assoc($Recordset_log));
+  $rows = mysqli_num_rows($Recordset_log);
   if($rows > 0) {
-      mysql_data_seek($Recordset_log, 0);
-	  $row_Recordset_log = mysql_fetch_assoc($Recordset_log);
+      mysqli_data_seek($Recordset_log, 0);
+	  $row_Recordset_log = mysqli_fetch_assoc($Recordset_log);
   }
 ?>
 </tbody>
@@ -767,7 +767,7 @@ case 1:
 }
 ?>			</td>
           </tr>
-          <?php } while ($row_Recordset_task = mysql_fetch_assoc($Recordset_task)); ?>
+          <?php } while ($row_Recordset_task = mysqli_fetch_assoc($Recordset_task)); ?>
 		  </tbody>
       </table>
 
@@ -838,11 +838,11 @@ echo "style='display:none'";
       <td><?php echo $row_Recordset_prj['project_lastupdate']; ?></td>
 </tr>
      <?php
-} while ($row_Recordset_prj = mysql_fetch_assoc($Recordset_prj));
-  $rows = mysql_num_rows($Recordset_prj);
+} while ($row_Recordset_prj = mysqli_fetch_assoc($Recordset_prj));
+  $rows = mysqli_num_rows($Recordset_prj);
   if($rows > 0) {
-      mysql_data_seek($Recordset_prj, 0);
-	  $row_Recordset_prj = mysql_fetch_assoc($Recordset_prj);
+      mysqli_data_seek($Recordset_prj, 0);
+	  $row_Recordset_prj = mysqli_fetch_assoc($Recordset_prj);
   }
 ?>
 </tbody>
@@ -901,6 +901,6 @@ echo "style='display:none'";
 <?php require('foot.php'); ?>
 </body>
 </html><?php
-mysql_free_result($DetailRS1);
-mysql_free_result($Recordset_task);
+mysqli_free_result($DetailRS1);
+mysqli_free_result($Recordset_task);
 ?>

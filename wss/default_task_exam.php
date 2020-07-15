@@ -11,12 +11,12 @@ $taskid = $_GET['taskid'];
 $nowuser = $_SESSION['MM_uid'];
 
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_task = sprintf("SELECT csa_to_user, csa_text, csa_remark2, csa_from_user, test01  
 FROM tk_task 
 WHERE TID = %s", GetSQLValueString($taskid, "int"));
-$Recordset_task = mysql_query($query_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
 
 $mailto = $row_Recordset_task['csa_to_user']; 
 $title = $row_Recordset_task['csa_text'];
@@ -34,8 +34,8 @@ if (isset($_SERVER['QUERY_STRING'])) {
                        GetSQLValueString($_POST['examtext'], "text"),
                        GetSQLValueString($nowuser, "text"),                      
                        GetSQLValueString($taskid, "int"));
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result2 = mysql_query($updatetask, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result2 = mysqli_query($tankdb,$updatetask) or die(mysqli_error());
  
  
  $statusid = "-1";
@@ -52,11 +52,11 @@ if ($examtext <> null){
 $examtitle = $multilingual_log_exam1.$examtext;
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_tkstatus1 = sprintf("SELECT * FROM tk_status WHERE id = %s ", GetSQLValueString($statusid, "text"));
-$tkstatus1 = mysql_query($query_tkstatus1, $tankdb) or die(mysql_error());
-$row_tkstatus1 = mysql_fetch_assoc($tkstatus1);
-$totalRows_tkstatus1 = mysql_num_rows($tkstatus1);
+$tkstatus1 = mysqli_query($tankdb,$query_tkstatus1) or die(mysqli_error());
+$row_tkstatus1 = mysqli_fetch_assoc($tkstatus1);
+$totalRows_tkstatus1 = mysqli_num_rows($tkstatus1);
  
  
   $newID = $taskid;
@@ -68,7 +68,7 @@ $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_ty
                        GetSQLValueString($newName, "text"),
                        GetSQLValueString($action, "text"),
                        GetSQLValueString($newID, "text"));  
-$Result3 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());
+$Result3 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 
  
     $updateGoTo = "default_task_edit.php?editID=".$taskid;
@@ -101,11 +101,11 @@ send_message( $v['uid'], $msg_from, $msg_type, $msg_id, $msg_title, 1 );
   header(sprintf("Location: %s", $updateGoTo));
   }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_user = "SELECT * FROM tk_status WHERE task_status_backup2 = '1' ORDER BY task_status_backup1 ASC";
-$Recordset_user = mysql_query($query_Recordset_user, $tankdb) or die(mysql_error());
-$row_Recordset_user = mysql_fetch_assoc($Recordset_user);
-$totalRows_Recordset_user = mysql_num_rows($Recordset_user);
+$Recordset_user = mysqli_query($tankdb,$query_Recordset_user) or die(mysqli_error());
+$row_Recordset_user = mysqli_fetch_assoc($Recordset_user);
+$totalRows_Recordset_user = mysqli_num_rows($Recordset_user);
 
 $restrictGoTo = "user_error3.php";
 if (($_SESSION['MM_rank'] < "2" || $row_Recordset_task['csa_from_user'] <> $_SESSION['MM_uid'])&&$_SESSION['MM_rank'] < "5") {   
@@ -133,11 +133,11 @@ do {
 ?>
           <option value="<?php echo $row_Recordset_user['id']?>"<?php if (!(strcmp($row_Recordset_user['id'], $row_Recordset_task['csa_remark2']))) {echo "selected=\"selected\"";} ?>><?php echo $row_Recordset_user['task_status']?></option>
           <?php
-} while ($row_Recordset_user = mysql_fetch_assoc($Recordset_user));
-  $rows = mysql_num_rows($Recordset_user);
+} while ($row_Recordset_user = mysqli_fetch_assoc($Recordset_user));
+  $rows = mysqli_num_rows($Recordset_user);
   if($rows > 0) {
-      mysql_data_seek($Recordset_user, 0);
-	  $row_Recordset_user = mysql_fetch_assoc($Recordset_user);
+      mysqli_data_seek($Recordset_user, 0);
+	  $row_Recordset_user = mysqli_fetch_assoc($Recordset_user);
   }
 ?>
         </select>

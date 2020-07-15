@@ -22,7 +22,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -46,7 +46,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_log = sprintf("SELECT *, 
 tk_user1.uid as uid1, 
 tk_user2.tk_display_name as tk_display_name2 
@@ -55,9 +55,9 @@ inner join tk_task on tk_task_byday.csa_tb_backup1=tk_task.TID
 inner join tk_user as tk_user2 on tk_task_byday.csa_tb_backup2=tk_user2.uid 
 inner join tk_user as tk_user1 on tk_task.csa_from_user=tk_user1.uid 
 WHERE csa_tb_year=$logdate AND csa_tb_backup1= %s ", GetSQLValueString($taskid, "text"));
-$log = mysql_query($query_log, $tankdb) or die(mysql_error());
-$row_log = mysql_fetch_assoc($log);
-$totalRows_log = mysql_num_rows($log);
+$log = mysqli_query($tankdb,$query_log) or die(mysqli_error());
+$row_log = mysqli_fetch_assoc($log);
+$totalRows_log = mysqli_num_rows($log);
 
 $mailto = $row_log['uid1']; 
 $title = $row_log['csa_text'];  
@@ -67,11 +67,11 @@ $statusid = "-1";
 if (isset($_POST['csa_tb_status'])) {
   $statusid = $_POST['csa_tb_status'];
 }
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_tkstatus1 = sprintf("SELECT * FROM tk_status WHERE id = %s ", GetSQLValueString($statusid, "text"));
-$tkstatus1 = mysql_query($query_tkstatus1, $tankdb) or die(mysql_error());
-$row_tkstatus1 = mysql_fetch_assoc($tkstatus1);
-$totalRows_tkstatus1 = mysql_num_rows($tkstatus1);
+$tkstatus1 = mysqli_query($tankdb,$query_tkstatus1) or die(mysqli_error());
+$row_tkstatus1 = mysqli_fetch_assoc($tkstatus1);
+$totalRows_tkstatus1 = mysqli_num_rows($tkstatus1);
 
 $editFormAction = $_SERVER['PHP_SELF'];
 if (isset($_SERVER['QUERY_STRING'])) {
@@ -91,8 +91,8 @@ if ((isset($_POST["log_update"])) && ($_POST["log_update"] == "form1")) {
                        GetSQLValueString($logdate, "text"),  
                        GetSQLValueString($taskid, "int"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
 
  $newID = $taskid;
   $newName = $_SESSION['MM_uid'];
@@ -112,7 +112,7 @@ $insertSQL2 = sprintf("INSERT INTO tk_log (tk_log_user, tk_log_action, tk_log_ty
                        GetSQLValueString($newName, "text"),
                        GetSQLValueString($action, "text"),
                        GetSQLValueString($newID, "text"));  
-$Result3 = mysql_query($insertSQL2, $tankdb) or die(mysql_error());
+$Result3 = mysqli_query($tankdb,$insertSQL2) or die(mysqli_error());
 
   $updateGoTo = "log_finish.php";
   if (isset($_SERVER['QUERY_STRING'])) {
@@ -137,17 +137,17 @@ $mail = send_message( $msg_to, $msg_from, $msg_type, $msg_id, $msg_title );
                        GetSQLValueString($_POST['csa_tb_time'], "text"),
                        GetSQLValueString($nowuser, "text"),                      
                        GetSQLValueString($taskid, "int"));
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result2 = mysql_query($updatetask, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result2 = mysqli_query($tankdb,$updatetask) or die(mysqli_error());
   }
 
 
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_tkstatus = "SELECT * FROM tk_status WHERE task_status_backup2 <> 1 ORDER BY task_status_backup1 ASC";
-$tkstatus = mysql_query($query_tkstatus, $tankdb) or die(mysql_error());
-$row_tkstatus = mysql_fetch_assoc($tkstatus);
-$totalRows_tkstatus = mysql_num_rows($tkstatus);
+$tkstatus = mysqli_query($tankdb,$query_tkstatus) or die(mysqli_error());
+$row_tkstatus = mysqli_fetch_assoc($tkstatus);
+$totalRows_tkstatus = mysqli_num_rows($tkstatus);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -244,11 +244,11 @@ do {
 ?>
                 <option value="<?php echo $row_tkstatus['id']?>" <?php if (!(strcmp($row_tkstatus['id'], $row_log['csa_tb_status']))) {echo "selected=\"selected\"";} ?>><?php echo $row_tkstatus['task_status']?></option>
                 <?php
-} while ($row_tkstatus = mysql_fetch_assoc($tkstatus));
-  $rows = mysql_num_rows($tkstatus);
+} while ($row_tkstatus = mysqli_fetch_assoc($tkstatus));
+  $rows = mysqli_num_rows($tkstatus);
   if($rows > 0) {
-      mysql_data_seek($tkstatus, 0);
-	  $row_tkstatus = mysql_fetch_assoc($tkstatus);
+      mysqli_data_seek($tkstatus, 0);
+	  $row_tkstatus = mysqli_fetch_assoc($tkstatus);
   }
 ?>
 </select>

@@ -28,7 +28,7 @@ $tasklisturl = "index.php?select=&select_project=&select_year=".date("Y")."&text
 $tasklisturl = "index.php?select=&select_project=&select_year=".date("Y")."&textfield=".date("m")."&select3=-1&select4=%&select_prt=&select_temp=&inputtitle=&select1=-1&select2=%&select_type=&inputid=&inputtag=&pagetab=cctome";
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_task = sprintf("SELECT *, 
 tk_user1.tk_display_name as tk_display_name1, 
 tk_user2.tk_display_name as tk_display_name2, 
@@ -44,22 +44,22 @@ inner join tk_user as tk_user3 on tk_task.csa_create_user=tk_user3.uid
 inner join tk_user as tk_user4 on tk_task.csa_last_user=tk_user4.uid 
 inner join tk_project on tk_task.csa_project=tk_project.id 
 WHERE TID = %s", GetSQLValueString($colname_Recordset_task, "int"));
-$Recordset_task = mysql_query($query_Recordset_task, $tankdb) or die(mysql_error());
-$row_Recordset_task = mysql_fetch_assoc($Recordset_task);
-$totalRows_Recordset_task = mysql_num_rows($Recordset_task);
+$Recordset_task = mysqli_query($tankdb,$query_Recordset_task) or die(mysqli_error());
+$row_Recordset_task = mysqli_fetch_assoc($Recordset_task);
+$totalRows_Recordset_task = mysqli_num_rows($Recordset_task);
 
 
 $taskid = $_GET['editID'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_sumlog = sprintf("SELECT sum(csa_tb_manhour) as sum_hour FROM tk_task_byday WHERE csa_tb_backup1= %s", GetSQLValueString($taskid, "int"));
-$Recordset_sumlog = mysql_query($query_Recordset_sumlog, $tankdb) or die(mysql_error());
-$row_Recordset_sumlog = mysql_fetch_assoc($Recordset_sumlog);
+$Recordset_sumlog = mysqli_query($tankdb,$query_Recordset_sumlog) or die(mysqli_error());
+$row_Recordset_sumlog = mysqli_fetch_assoc($Recordset_sumlog);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_countlog = sprintf("SELECT COUNT(*) as count_log FROM tk_task_byday WHERE csa_tb_backup1= %s", GetSQLValueString($taskid, "int"));
-$Recordset_countlog = mysql_query($query_Recordset_countlog, $tankdb) or die(mysql_error());
-$row_Recordset_countlog = mysql_fetch_assoc($Recordset_countlog);
+$Recordset_countlog = mysqli_query($tankdb,$query_Recordset_countlog) or die(mysqli_error());
+$row_Recordset_countlog = mysqli_fetch_assoc($Recordset_countlog);
 
 $maxRows_Recordset_comment = 10;
 $pageNum_Recordset_comment = 0;
@@ -68,7 +68,7 @@ if (isset($_GET['pageNum_Recordset_comment'])) {
 }
 $startRow_Recordset_comment = $pageNum_Recordset_comment * $maxRows_Recordset_comment;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_comment = sprintf("SELECT * FROM tk_comment 
 inner join tk_user on tk_comment.tk_comm_user =tk_user.uid 
 								 WHERE tk_comm_pid = %s AND tk_comm_type = 1 
@@ -77,14 +77,14 @@ inner join tk_user on tk_comment.tk_comm_user =tk_user.uid
 								GetSQLValueString($colname_Recordset_task, "text")
 								);
 $query_limit_Recordset_comment = sprintf("%s LIMIT %d, %d", $query_Recordset_comment, $startRow_Recordset_comment, $maxRows_Recordset_comment);
-$Recordset_comment = mysql_query($query_limit_Recordset_comment, $tankdb) or die(mysql_error());
-$row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
+$Recordset_comment = mysqli_query($tankdb,$query_limit_Recordset_comment) or die(mysqli_error());
+$row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
 
 if (isset($_GET['totalRows_Recordset_comment'])) {
   $totalRows_Recordset_comment = $_GET['totalRows_Recordset_comment'];
 } else {
-  $all_Recordset_comment = mysql_query($query_Recordset_comment);
-  $totalRows_Recordset_comment = mysql_num_rows($all_Recordset_comment);
+  $all_Recordset_comment = mysqli_query($tankdb,$query_Recordset_comment);
+  $totalRows_Recordset_comment = mysqli_num_rows($all_Recordset_comment);
 }
 $totalPages_Recordset_comment = ceil($totalRows_Recordset_comment/$maxRows_Recordset_comment)-1;
 
@@ -111,7 +111,7 @@ if (isset($_GET['pageNum_Recordset_actlog'])) {
 }
 $startRow_Recordset_actlog = $pageNum_Recordset_actlog * $maxRows_Recordset_actlog;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_actlog = sprintf("SELECT * FROM tk_log 
 inner join tk_user on tk_log.tk_log_user =tk_user.uid 
 								 WHERE tk_log_type = %s AND tk_log_class = 1 
@@ -120,14 +120,14 @@ inner join tk_user on tk_log.tk_log_user =tk_user.uid
 								GetSQLValueString($colname_Recordset_task, "text")
 								);
 $query_limit_Recordset_actlog = sprintf("%s LIMIT %d, %d", $query_Recordset_actlog, $startRow_Recordset_actlog, $maxRows_Recordset_actlog);
-$Recordset_actlog = mysql_query($query_limit_Recordset_actlog, $tankdb) or die(mysql_error());
-$row_Recordset_actlog = mysql_fetch_assoc($Recordset_actlog);
+$Recordset_actlog = mysqli_query($tankdb,$query_limit_Recordset_actlog) or die(mysqli_error());
+$row_Recordset_actlog = mysqli_fetch_assoc($Recordset_actlog);
 
 if (isset($_GET['totalRows_Recordset_actlog'])) {
   $totalRows_Recordset_actlog = $_GET['totalRows_Recordset_actlog'];
 } else {
-  $all_Recordset_actlog = mysql_query($query_Recordset_actlog);
-  $totalRows_Recordset_actlog = mysql_num_rows($all_Recordset_actlog);
+  $all_Recordset_actlog = mysqli_query($tankdb,$query_Recordset_actlog);
+  $totalRows_Recordset_actlog = mysqli_num_rows($all_Recordset_actlog);
 }
 $totalPages_Recordset_actlog = ceil($totalRows_Recordset_actlog/$maxRows_Recordset_actlog)-1;
 
@@ -147,14 +147,14 @@ if (!empty($_SERVER['QUERY_STRING'])) {
 }
 $queryString_Recordset_actlog = sprintf("&totalRows_Recordset_actlog=%d%s", $totalRows_Recordset_actlog, $queryString_Recordset_actlog);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_sumtotal = sprintf("SELECT 
 							COUNT(*) as count_task   
 							FROM tk_status  							
 							WHERE task_status_backup2 = '1'"
 								);
-$Recordset_sumtotal = mysql_query($query_Recordset_sumtotal, $tankdb) or die(mysql_error());
-$row_Recordset_sumtotal = mysql_fetch_assoc($Recordset_sumtotal);
+$Recordset_sumtotal = mysqli_query($tankdb,$query_Recordset_sumtotal) or die(mysqli_error());
+$row_Recordset_sumtotal = mysqli_fetch_assoc($Recordset_sumtotal);
 $exam_totaltask=$row_Recordset_sumtotal['count_task'];
 
 //for wbs!
@@ -168,7 +168,7 @@ $startRow_Recordset_subtask = $pageNum_Recordset_subtask * $maxRows_Recordset_su
 
 //$colname_Recordset_subtask = $row_DetailRS1['tk_user_login'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_subtask = sprintf("SELECT * 
 							FROM tk_task 
 							inner join tk_task_tpye on tk_task.csa_type=tk_task_tpye.id								
@@ -178,14 +178,14 @@ $query_Recordset_subtask = sprintf("SELECT *
 								GetSQLValueString($colname_Recordset_task, "text")
 								);
 $query_limit_Recordset_subtask = sprintf("%s LIMIT %d, %d", $query_Recordset_subtask, $startRow_Recordset_subtask, $maxRows_Recordset_subtask);
-$Recordset_subtask = mysql_query($query_limit_Recordset_subtask, $tankdb) or die(mysql_error());
-$row_Recordset_subtask = mysql_fetch_assoc($Recordset_subtask);
+$Recordset_subtask = mysqli_query($tankdb,$query_limit_Recordset_subtask) or die(mysqli_error());
+$row_Recordset_subtask = mysqli_fetch_assoc($Recordset_subtask);
 
 if (isset($_GET['totalRows_Recordset_subtask'])) {
   $totalRows_Recordset_subtask = $_GET['totalRows_Recordset_subtask'];
 } else {
-  $all_Recordset_subtask = mysql_query($query_Recordset_subtask);
-  $totalRows_Recordset_subtask = mysql_num_rows($all_Recordset_subtask);
+  $all_Recordset_subtask = mysqli_query($tankdb,$query_Recordset_subtask);
+  $totalRows_Recordset_subtask = mysqli_num_rows($all_Recordset_subtask);
 }
 $totalPages_Recordset_subtask = ceil($totalRows_Recordset_subtask/$maxRows_Recordset_subtask)-1;
 
@@ -221,26 +221,26 @@ $wbssum = $row_Recordset_task['TID'].">".$wbsID;
 $wbssum = $row_Recordset_task['csa_remark5'].">".$row_Recordset_task['TID'].">".$wbsID;
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_sumplan = "SELECT round(sum(csa_plan_hour),1) as sum_plan_hour FROM tk_task 
 inner join tk_task_tpye on tk_task.csa_type=tk_task_tpye.id 
 WHERE task_tpye NOT LIKE '$multilingual_dd_status_ca' AND csa_remark5 LIKE '$wbssum%'";
-$Recordset_sumplan = mysql_query($query_Recordset_sumplan, $tankdb) or die(mysql_error());
-$row_Recordset_sumplan = mysql_fetch_assoc($Recordset_sumplan);
+$Recordset_sumplan = mysqli_query($tankdb,$query_Recordset_sumplan) or die(mysqli_error());
+$row_Recordset_sumplan = mysqli_fetch_assoc($Recordset_sumplan);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_sumsublog = "SELECT round(sum(csa_tb_manhour),1) as sum_sublog FROM tk_task  
 inner join tk_task_byday on tk_task.TID=tk_task_byday.csa_tb_backup1 
 WHERE csa_remark5 LIKE '$wbssum%'";
-$Recordset_sumsublog = mysql_query($query_Recordset_sumsublog, $tankdb) or die(mysql_error());
-$row_Recordset_sumsublog = mysql_fetch_assoc($Recordset_sumsublog);
+$Recordset_sumsublog = mysqli_query($tankdb,$query_Recordset_sumsublog) or die(mysqli_error());
+$row_Recordset_sumsublog = mysqli_fetch_assoc($Recordset_sumsublog);
 
 $pattaskid = $row_Recordset_task['csa_remark4'];
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_pattask = "SELECT * FROM tk_task inner join tk_task_tpye on tk_task.csa_type=tk_task_tpye.id WHERE TID = '$pattaskid'";
-$Recordset_pattask = mysql_query($query_Recordset_pattask, $tankdb) or die(mysql_error());
-$row_Recordset_pattask = mysql_fetch_assoc($Recordset_pattask);
+$Recordset_pattask = mysqli_query($tankdb,$query_Recordset_pattask) or die(mysqli_error());
+$row_Recordset_pattask = mysqli_fetch_assoc($Recordset_pattask);
 
 $task_arr = array ();
 $task_arr['name'] = $row_Recordset_task['csa_text'];
@@ -602,11 +602,11 @@ echo $editcomment_row;
 	?>                </td>
               </tr>
               <?php
-} while ($row_Recordset_comment = mysql_fetch_assoc($Recordset_comment));
-  $rows = mysql_num_rows($Recordset_comment);
+} while ($row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment));
+  $rows = mysqli_num_rows($Recordset_comment);
   if($rows > 0) {
-      mysql_data_seek($Recordset_comment, 0);
-	  $row_Recordset_comment = mysql_fetch_assoc($Recordset_comment);
+      mysqli_data_seek($Recordset_comment, 0);
+	  $row_Recordset_comment = mysqli_fetch_assoc($Recordset_comment);
   }
 ?>
             </table>
@@ -647,11 +647,11 @@ echo $editcomment_row;
                 <td ><?php echo $row_Recordset_actlog['tk_log_time']; ?> <a href="user_view.php?recordID=<?php echo $row_Recordset_actlog['tk_log_user']; ?>"><?php echo $row_Recordset_actlog['tk_display_name']; ?></a><?php echo $row_Recordset_actlog['tk_log_action']; ?>
               <td>              </tr>
               <?php
-} while ($row_Recordset_actlog = mysql_fetch_assoc($Recordset_actlog));
-  $rows = mysql_num_rows($Recordset_actlog);
+} while ($row_Recordset_actlog = mysqli_fetch_assoc($Recordset_actlog));
+  $rows = mysqli_num_rows($Recordset_actlog);
   if($rows > 0) {
-      mysql_data_seek($Recordset_actlog, 0);
-	  $row_Recordset_actlog = mysql_fetch_assoc($Recordset_actlog);
+      mysqli_data_seek($Recordset_actlog, 0);
+	  $row_Recordset_actlog = mysqli_fetch_assoc($Recordset_actlog);
   }
 ?>
             </table>
@@ -766,7 +766,7 @@ case 1:
 }
 ?>                    </td>
                   </tr>
-                  <?php } while ($row_Recordset_subtask = mysql_fetch_assoc($Recordset_subtask)); ?>
+                  <?php } while ($row_Recordset_subtask = mysqli_fetch_assoc($Recordset_subtask)); ?>
               </tbody>
             </table>
             <table class="rowcon" border="0" align="center">
@@ -826,5 +826,5 @@ case 1:
 </body>
 </html>
 <?php
-mysql_free_result($Recordset_task);
+mysqli_free_result($Recordset_task);
 ?>

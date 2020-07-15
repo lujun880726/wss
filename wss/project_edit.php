@@ -44,8 +44,8 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "form1")) {
                        GetSQLValueString($_POST['project_status'], "text"),
                        GetSQLValueString($_POST['id'], "int"));
 
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result1 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result1 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
 
   $updateGoTo = "project_view.php?recordID=$colname_Recordset1";
   if (isset($_SERVER['QUERY_STRING'])) {
@@ -56,17 +56,17 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "form1")) {
 }
 
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT * FROM tk_project WHERE id = %s", GetSQLValueString($colname_Recordset1, "int"));
-$Recordset1 = mysql_query($query_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
-$totalRows_Recordset1 = mysql_num_rows($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
+$totalRows_Recordset1 = mysqli_num_rows($Recordset1);
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset2 = "SELECT * FROM tk_status_project ORDER BY task_status_pbackup1 ASC";
-$Recordset2 = mysql_query($query_Recordset2, $tankdb) or die(mysql_error());
-$row_Recordset2 = mysql_fetch_assoc($Recordset2);
-$totalRows_Recordset2 = mysql_num_rows($Recordset2);
+$Recordset2 = mysqli_query($tankdb,$query_Recordset2) or die(mysqli_error());
+$row_Recordset2 = mysqli_fetch_assoc($Recordset2);
+$totalRows_Recordset2 = mysqli_num_rows($Recordset2);
 
 $user_arr = get_user_select();
 
@@ -232,11 +232,11 @@ do {
 ?>
         <option value="<?php echo $row_Recordset2['psid']?>"<?php if (!(strcmp($row_Recordset2['psid'], ($row_Recordset1['project_status'])))) {echo "selected=\"selected\"";} ?>><?php echo $row_Recordset2['task_status']?></option>
         <?php
-} while ($row_Recordset2 = mysql_fetch_assoc($Recordset2));
-  $rows = mysql_num_rows($Recordset2);
+} while ($row_Recordset2 = mysqli_fetch_assoc($Recordset2));
+  $rows = mysqli_num_rows($Recordset2);
   if($rows > 0) {
-      mysql_data_seek($Recordset2, 0);
-	  $row_Recordset2 = mysql_fetch_assoc($Recordset2);
+      mysqli_data_seek($Recordset2, 0);
+	  $row_Recordset2 = mysqli_fetch_assoc($Recordset2);
   }
 ?>
 <?php if ($_SESSION['MM_rank'] > "4") { ?>
@@ -288,6 +288,6 @@ do {
 </body>
 </html>
 <?php
-mysql_free_result($Recordset1);
-mysql_free_result($Recordset2);
+mysqli_free_result($Recordset1);
+mysqli_free_result($Recordset2);
 ?>

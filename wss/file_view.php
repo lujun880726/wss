@@ -38,7 +38,7 @@ if (isset($_GET['pfile'])) {
   $pfiles = $_GET['pfile'];
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_DetailRS1 = sprintf("SELECT *, 
 tk_user1.tk_display_name as tk_display_name1, 
 tk_user2.tk_display_name as tk_display_name2 FROM tk_document 
@@ -47,14 +47,14 @@ inner join tk_user as tk_user2 on tk_document.tk_doc_edit=tk_user2.uid
 $inproject 
 WHERE tk_document.docid = %s", GetSQLValueString($colname_DetailRS1, "int"));
 $query_limit_DetailRS1 = sprintf("%s LIMIT %d, %d", $query_DetailRS1, $startRow_DetailRS1, $maxRows_DetailRS1);
-$DetailRS1 = mysql_query($query_limit_DetailRS1, $tankdb) or die(mysql_error());
-$row_DetailRS1 = mysql_fetch_assoc($DetailRS1);
+$DetailRS1 = mysqli_query($tankdb,$query_limit_DetailRS1) or die(mysqli_error());
+$row_DetailRS1 = mysqli_fetch_assoc($DetailRS1);
 
 if (isset($_GET['totalRows_DetailRS1'])) {
   $totalRows_DetailRS1 = $_GET['totalRows_DetailRS1'];
 } else {
-  $all_DetailRS1 = mysql_query($query_DetailRS1);
-  $totalRows_DetailRS1 = mysql_num_rows($all_DetailRS1);
+  $all_DetailRS1 = mysqli_query($tankdb,$query_DetailRS1);
+  $totalRows_DetailRS1 = mysqli_num_rows($all_DetailRS1);
 }
 $totalPages_DetailRS1 = ceil($totalRows_DetailRS1/$maxRows_DetailRS1)-1;
 
@@ -67,7 +67,7 @@ if (isset($_GET['pageNum_Recordset_actlog'])) {
 }
 $startRow_Recordset_actlog = $pageNum_Recordset_actlog * $maxRows_Recordset_actlog;
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset_actlog = sprintf("SELECT * FROM tk_log 
 inner join tk_user on tk_log.tk_log_user =tk_user.uid 
 								 WHERE tk_log_type = %s AND tk_log_class = 2 
@@ -76,14 +76,14 @@ inner join tk_user on tk_log.tk_log_user =tk_user.uid
 								GetSQLValueString($docid, "text")
 								);
 $query_limit_Recordset_actlog = sprintf("%s LIMIT %d, %d", $query_Recordset_actlog, $startRow_Recordset_actlog, $maxRows_Recordset_actlog);
-$Recordset_actlog = mysql_query($query_limit_Recordset_actlog, $tankdb) or die(mysql_error());
-$row_Recordset_actlog = mysql_fetch_assoc($Recordset_actlog);
+$Recordset_actlog = mysqli_query($tankdb,$query_limit_Recordset_actlog) or die(mysqli_error());
+$row_Recordset_actlog = mysqli_fetch_assoc($Recordset_actlog);
 
 if (isset($_GET['totalRows_Recordset_actlog'])) {
   $totalRows_Recordset_actlog = $_GET['totalRows_Recordset_actlog'];
 } else {
-  $all_Recordset_actlog = mysql_query($query_Recordset_actlog);
-  $totalRows_Recordset_actlog = mysql_num_rows($all_Recordset_actlog);
+  $all_Recordset_actlog = mysqli_query($tankdb,$query_Recordset_actlog);
+  $totalRows_Recordset_actlog = mysqli_num_rows($all_Recordset_actlog);
 }
 $totalPages_Recordset_actlog = ceil($totalRows_Recordset_actlog/$maxRows_Recordset_actlog)-1;
 
@@ -192,11 +192,11 @@ $queryString_Recordset_actlog = sprintf("&totalRows_Recordset_actlog=%d%s", $tot
           <td>
         </tr>
         <?php
-} while ($row_Recordset_actlog = mysql_fetch_assoc($Recordset_actlog));
-  $rows = mysql_num_rows($Recordset_actlog);
+} while ($row_Recordset_actlog = mysqli_fetch_assoc($Recordset_actlog));
+  $rows = mysqli_num_rows($Recordset_actlog);
   if($rows > 0) {
-      mysql_data_seek($Recordset_actlog, 0);
-	  $row_Recordset_actlog = mysql_fetch_assoc($Recordset_actlog);
+      mysqli_data_seek($Recordset_actlog, 0);
+	  $row_Recordset_actlog = mysqli_fetch_assoc($Recordset_actlog);
   }
 ?>
 	</table>
@@ -229,5 +229,5 @@ $queryString_Recordset_actlog = sprintf("&totalRows_Recordset_actlog=%d%s", $tot
 </body>
 </html>
 <?php
-mysql_free_result($DetailRS1);
+mysqli_free_result($DetailRS1);
 ?>

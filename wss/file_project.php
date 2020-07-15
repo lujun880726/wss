@@ -12,7 +12,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? mysqli_real_escape_string($tankdb,$theValue) : mysqli_escape_string($tankdb,$theValue);
 
   switch ($theType) {
     case "text":
@@ -50,21 +50,21 @@ if (isset($_GET['inputtitle'])) {
   $colinputtitle_Recordset1 = $_GET['inputtitle'];
 }
 
-mysql_select_db($database_tankdb, $tankdb);
+mysqli_select_db($tankdb,$database_tankdb);
 $query_Recordset1 = sprintf("SELECT * FROM tk_project 
 							
 							inner join tk_user on tk_project.project_to_user=tk_user.uid
 							WHERE project_name LIKE %s ORDER BY tk_project.project_lastupdate DESC",  
 GetSQLValueString("%" . $colinputtitle_Recordset1 . "%", "text"));
 $query_limit_Recordset1 = sprintf("%s LIMIT %d, %d", $query_Recordset1, $startRow_Recordset1, $maxRows_Recordset1);
-$Recordset1 = mysql_query($query_limit_Recordset1, $tankdb) or die(mysql_error());
-$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$Recordset1 = mysqli_query($tankdb,$query_limit_Recordset1) or die(mysqli_error());
+$row_Recordset1 = mysqli_fetch_assoc($Recordset1);
 
 if (isset($_GET['totalRows_Recordset1'])) {
   $totalRows_Recordset1 = $_GET['totalRows_Recordset1'];
 } else {
-  $all_Recordset1 = mysql_query($query_Recordset1);
-  $totalRows_Recordset1 = mysql_num_rows($all_Recordset1);
+  $all_Recordset1 = mysqli_query($tankdb,$query_Recordset1);
+  $totalRows_Recordset1 = mysqli_num_rows($all_Recordset1);
 }
 $totalPages_Recordset1 = ceil($totalRows_Recordset1/$maxRows_Recordset1)-1;
 
@@ -126,11 +126,11 @@ $queryString_Recordset1 = sprintf("&totalRows_Recordset1=%d%s", $totalRows_Recor
     </tr>
     
 	<?php
-} while ($row_Recordset1 = mysql_fetch_assoc($Recordset1));
-  $rows = mysql_num_rows($Recordset1);
+} while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1));
+  $rows = mysqli_num_rows($Recordset1);
   if($rows > 0) {
-      mysql_data_seek($Recordset1, 0);
-	  $row_Recordset1 = mysql_fetch_assoc($Recordset1);
+      mysqli_data_seek($Recordset1, 0);
+	  $row_Recordset1 = mysqli_fetch_assoc($Recordset1);
   }
 ?>
 	<tr valign="baseline">

@@ -18,26 +18,23 @@ if (isset($_POST['textfield'])) {
   $MM_redirectLoginSuccess = "index.php";
   $MM_redirectLoginFailed = "user_error2.php";
   $MM_redirecttoReferrer = false;
-  mysql_select_db($database_tankdb, $tankdb);
+  mysqli_select_db($tankdb,$database_tankdb);
   	
   $LoginRS__query=sprintf("SELECT tk_user_login, tk_user_pass, tk_display_name, uid, tk_user_status, tk_user_rank, tk_user_message, tk_user_lastuse FROM tk_user WHERE binary tk_user_login=%s AND (tk_user_pass=%s OR tk_user_pass=%s)",
   GetSQLValueString($loginUsername, "text"), GetSQLValueString($tk_password, "text"), GetSQLValueString($password, "text")); 
    
-  $LoginRS = mysql_query($LoginRS__query, $tankdb) or die(mysql_error());
-  $loginFoundUser = mysql_num_rows($LoginRS);
-  
- 
-  if ($loginFoundUser) {
-  
-	
+  $LoginRS = mysqli_query($tankdb,$LoginRS__query) or die(mysqli_error());
+  $loginFoundUser = mysqli_num_rows($LoginRS);
 
-    $loginStrGroup  = mysql_result($LoginRS,0,'tk_user_status');
-	$loginStrDisplayname  = mysql_result($LoginRS,0,'tk_display_name');
-	$loginStrpid  = mysql_result($LoginRS,0,'uid');
-	$loginStrrank  = mysql_result($LoginRS,0,'tk_user_rank');
-	$loginStrlogin  = mysql_result($LoginRS,0,'tk_user_login');
-	$loginStrmsg  = mysql_result($LoginRS,0,'tk_user_message');
-	$loginStrlast  = mysql_result($LoginRS,0,'tk_user_lastuse');
+  if ($loginFoundUser) {
+
+    $loginStrGroup  = mysqli_result($LoginRS,0,'tk_user_status');
+	$loginStrDisplayname  = mysqli_result($LoginRS,0,'tk_display_name');
+	$loginStrpid  = mysqli_result($LoginRS,0,'uid');
+	$loginStrrank  = mysqli_result($LoginRS,0,'tk_user_rank');
+	$loginStrlogin  = mysqli_result($LoginRS,0,'tk_user_login');
+	$loginStrmsg  = mysqli_result($LoginRS,0,'tk_user_message');
+	$loginStrlast  = mysqli_result($LoginRS,0,'tk_user_lastuse');
 
 	//check_message( $loginStrpid );
     
@@ -63,8 +60,8 @@ if (isset($_POST['textfield'])) {
   $updateSQL = sprintf("UPDATE tk_user SET tk_user_rank=%s WHERE tk_user_login=%s", 
                        GetSQLValueString($userrank, "text"),                      
                        GetSQLValueString($loginStrlogin, "text"));
-  mysql_select_db($database_tankdb, $tankdb);
-  $Result2 = mysql_query($updateSQL, $tankdb) or die(mysql_error());
+  mysqli_select_db($tankdb,$database_tankdb);
+  $Result2 = mysqli_query($tankdb,$updateSQL) or die(mysqli_error());
   $_SESSION['MM_rank'] = $userrank;
   }
 

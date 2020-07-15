@@ -163,11 +163,11 @@ function editfolder()
 	  <td>
 </tr>	  
 <?php
-} while ($row_Recordset_actlog = mysql_fetch_assoc($Recordset_actlog));
-  $rows = mysql_num_rows($Recordset_actlog);
+} while ($row_Recordset_actlog = mysqli_fetch_assoc($Recordset_actlog));
+  $rows = mysqli_num_rows($Recordset_actlog);
   if($rows > 0) {
-      mysql_data_seek($Recordset_actlog, 0);
-	  $row_Recordset_actlog = mysql_fetch_assoc($Recordset_actlog);
+      mysqli_data_seek($Recordset_actlog, 0);
+	  $row_Recordset_actlog = mysqli_fetch_assoc($Recordset_actlog);
   }
 ?>	
 	
@@ -326,11 +326,11 @@ function editfolder<?php echo $row_Recordset_file['docid']; ?>()
     </tr>
     
 	<?php
-} while ($row_Recordset_file = mysql_fetch_assoc($Recordset_file));
-  $rows = mysql_num_rows($Recordset_file);
+} while ($row_Recordset_file = mysqli_fetch_assoc($Recordset_file));
+  $rows = mysqli_num_rows($Recordset_file);
   if($rows > 0) {
-      mysql_data_seek($Recordset_file, 0);
-	  $row_Recordset_file = mysql_fetch_assoc($Recordset_file);
+      mysqli_data_seek($Recordset_file, 0);
+	  $row_Recordset_file = mysqli_fetch_assoc($Recordset_file);
   } //文档列表循环结束
 ?>
 <?php } //显示项目文档以外的文档 ?>
@@ -409,11 +409,11 @@ function editfolder<?php echo $row_Recordset_file['docid']; ?>()
     </tr>
     
 	<?php
-} while ($row_Recordset1 = mysql_fetch_assoc($Recordset1));
-  $rows = mysql_num_rows($Recordset1);
+} while ($row_Recordset1 = mysqli_fetch_assoc($Recordset1));
+  $rows = mysqli_num_rows($Recordset1);
   if($rows > 0) {
-      mysql_data_seek($Recordset1, 0);
-	  $row_Recordset1 = mysql_fetch_assoc($Recordset1);
+      mysqli_data_seek($Recordset1, 0);
+	  $row_Recordset1 = mysqli_fetch_assoc($Recordset1);
   }
 ?>
 </tbody>
@@ -454,5 +454,5 @@ function editfolder<?php echo $row_Recordset_file['docid']; ?>()
 <p>&nbsp;</p>
 
 <?php
-mysql_free_result($DetailRS1);
+mysqli_free_result($DetailRS1);
 ?>
