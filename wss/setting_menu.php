@@ -1,7 +1,8 @@
 <?php 
 $type = $_SERVER["QUERY_STRING"];
 $self =$_SERVER['PHP_SELF'];
-$pagename = end(explode("/",$self));
+$tmp = explode("/",$self);
+$pagename = end($tmp);
 ?>
 
 <span class="<?php if($type == "type=setting"){echo "set_menu_onfocus";} else {echo "set_menu_nofocus";}?>"><a href="setting.php?type=setting"><?php echo $multilingual_set_baseset; ?></a></span>
